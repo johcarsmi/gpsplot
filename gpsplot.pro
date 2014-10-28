@@ -4,21 +4,26 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = gpsplot
 TEMPLATE = app
+INCLUDEPATH += hdr \
+    /usr/include/qwt6
 
-
-SOURCES += main.cpp\
-        gpsplot.cpp \
+SOURCES  += src/main.cpp\
     src/gpsplot.cpp \
-    src/main.cpp
+    src/latlon.cpp \
+    src/gpgraph.cpp \
+    src/plotdata.cpp
 
-HEADERS  += gpsplot.h \
-    hdr/gpsplot.h
+HEADERS  += hdr/gpsplot.h \
+    hdr/gpgraph.h \
+    hdr/plotdata.h
 
-FORMS    += gpsplot.ui \
-    frm/gpsplot.ui
+FORMS    += frm/gpsplot.ui \
+    frm/gpgraph.ui
+
+LIBS     += -L/usr/lib64 -lqwt
