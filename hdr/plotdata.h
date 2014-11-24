@@ -16,6 +16,7 @@ public:
     QVector <double> xData;
     QVector <double> yData;
     QString trkName;
+    QString trkDate;
 };
 
 #endif // PLOTDATA_H

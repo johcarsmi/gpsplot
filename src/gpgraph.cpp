@@ -40,18 +40,21 @@ void GpGraph::ggLayout()
     QwtDateScaleEngine *dse = new QwtDateScaleEngine(Qt::UTC);
 
     ui->dspTrkName->setText(ggData->trkName);
+    ui->dspTrkDate->setText(ggData->trkDate);
     ui->ggPlotArea->setTitle(ggData->trkName);
     ui->ggPlotArea->setCanvasBackground(Qt::white);
     // Label on Y axis.
     ui->ggPlotArea->setAxisTitle(QwtPlot::yLeft, ggData->yLabel);
 
-    // TODO time on X axis.
-    dsd->setDateFormat(QwtDate::Minute, QString("hh:mm"));      // Not doing what's wanted at the moment.
-    dsd->setDateFormat(QwtDate::Hour, QString("hh:mm"));        // Not doing what's wanted at the moment.
-    ui->ggPlotArea->setAxisScaleDraw(QwtPlot::xBottom, dsd);
-    ui->ggPlotArea->setAxisScaleEngine(QwtPlot::xBottom, dse);
+    if (ggData->xType == "datetime")
+    {
+        dsd->setDateFormat(QwtDate::Minute, QString("hh:mm"));
+        dsd->setDateFormat(QwtDate::Hour, QString("hh:mm"));
+        ui->ggPlotArea->setAxisScaleDraw(QwtPlot::xBottom, dsd);
+        ui->ggPlotArea->setAxisScaleEngine(QwtPlot::xBottom, dse);
+    }
     //      label on X axis.
-    QFont fnt("Liberation Sans", 7);
+    QFont fnt("Liberation Sans", 8);
     ui->ggPlotArea->setAxisFont(QwtPlot::xBottom, fnt);
     ui->ggPlotArea->setAxisTitle(QwtPlot::xBottom, ggData->xLabel);
     ui->ggPlotArea->setAxisLabelAlignment(QwtPlot::xBottom, Qt::AlignRight);

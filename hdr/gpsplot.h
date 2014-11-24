@@ -26,22 +26,30 @@ private:
     QString eleText;
     QXmlStreamReader xRead;
     bool dok;
-    QVector <double> lat;
-    QVector <double> lon;
-    QVector <double> ele;
-    QVector <double> tim;
+    QVector <double> lat;   // Latitude
+    QVector <double> lon;   // Longitude
+    QVector <double> ele;   // Elevation
+    QVector <double> tim;   // Time
+    QVector <double> dst;   // Distance
+    QVector <double> hspd;  // Horizontal Speed
+    QVector <double> vspd;  // Vertical Speed
+    bool firsttime;
+    QString trkDate;
 
     void processFile(const QString &);
     void process_trk(QXmlStreamReader &);
     void process_trkseg(QXmlStreamReader &);
-    void trialPlot();
     void createGraph();
+    void calcDst();
+    void calcSpeed();
+    void calcSpeed2();
     PlotData *pData;
     GpGraph *ggForm;
 
 private slots:
     void doClose();
     void doOpen();
+    void doPlot();
 };
 
 #endif // GPSPLOT_H

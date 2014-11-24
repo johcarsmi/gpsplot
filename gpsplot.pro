@@ -21,7 +21,8 @@ SOURCES  += src/main.cpp\
 
 HEADERS  += hdr/gpsplot.h \
     hdr/gpgraph.h \
-    hdr/plotdata.h
+    hdr/plotdata.h \
+    hdr/latlon.h
 
 FORMS    += frm/gpsplot.ui \
     frm/gpgraph.ui
