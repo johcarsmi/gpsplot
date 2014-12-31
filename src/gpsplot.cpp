@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QXmlStreamAttributes>
 #include <QVector>
+#include <math.h>
 
 #include <qwt_date.h>
 
@@ -17,7 +18,6 @@ GpsPlot::GpsPlot(QWidget *parent) :
 {
     ui->setupUi(this);
     pData = new PlotData();
-    ui->rbUndef0->setVisible(false);
     ui->rbUndef1->setVisible(false);
     ui->pbPlot->setEnabled(false);
 }
@@ -90,6 +90,7 @@ void GpsPlot::process_trkseg(QXmlStreamReader & inXml)
     dst.clear();
     hspd.clear();
     vspd.clear();
+    latMax = latMin = lonMax = lonMin = 0;
     QXmlStreamAttributes attr;
     QDateTime qdt;
     while (inXml.readNext() != inXml.atEnd())
@@ -106,6 +107,18 @@ void GpsPlot::process_trkseg(QXmlStreamReader & inXml)
                 attr = inXml.attributes();
                 lat.append(QString(attr.value("lat").toString()).toDouble(&dok));
                 lon.append(QString(attr.value("lon").toString()).toDouble(&dok));
+                if (!firsttime) // Get the minimum and maximum values to allow equal scaling later.
+                {
+                    if (lat.last() < latMin) latMin = lat.last();
+                    if (lat.last() > latMax) latMax = lat.last();
+                    if (lon.last() < lonMin) lonMin = lon.last();
+                    if (lon.last() > lonMax) lonMax = lon.last();
+                }
+                else
+                {
+                    latMin = latMax = lat.last();
+                    lonMin = lonMax = lon.last();
+                }
             }
             if (inXml.name() == tr("ele"))
             {
@@ -114,7 +127,7 @@ void GpsPlot::process_trkseg(QXmlStreamReader & inXml)
             if (inXml.name() == tr("time"))
             {
                 qdt = QDateTime::fromString(inXml.readElementText(), Qt::ISODate);
-                if (firsttime) trkDate = qdt.toString(Qt::SystemLocaleShortDate).left(10);
+                if (firsttime) trkDate = qdt.toString(Qt::SystemLocaleShortDate).left(10); firsttime = false;
                 tim.append(QwtDate::toDouble(qdt));
             }
         }
@@ -131,34 +144,27 @@ void GpsPlot::calcDst()
         cum += distance(lat[ix -1],lon[ix-1],lat[ix],lon[ix],'K');
         dst.append(cum);
     }
-    calcSpeed2();
+    calcSpeed();
 }
 
-void GpsPlot::calcSpeed()
+void GpsPlot::calcSpeed()   // Taking each reading n seconds apart.
 {
      double wrk = 0.0;
+     int ixh = 0;
      hspd.append(0.0);
      vspd.append(0.0);
+     tim2.append(tim[0]);
      for (int ix = 1; ix < dst.count(); ix++)
      {
-         wrk = ( (dst[ix] - dst[ix-1]) * 3600000 ) / (tim[ix] - tim[ix-1]);
-         hspd.append(wrk);  // Horizontal Speed in kmh
-         wrk = ( (ele[ix] - ele[ix-1]) * 60000 ) / (tim[ix] - tim[ix-1]);
-         vspd.append(wrk);  // Vertical Speed in m/min
-     }
-}
-
-void GpsPlot::calcSpeed2()
-{
-     double wrk = 0.0;
-     hspd.append(0.0);
-     vspd.append(0.0);
-     for (int ix = 8; ix < dst.count(); ix++)
-     {
-         wrk = ( (dst[ix] - dst[ix-8]) * 3600000 ) / (tim[ix] - tim[ix-8]);
-         hspd.append(wrk);  // Horizontal Speed in kmh
-         wrk = ( (ele[ix] - ele[ix-8]) * 60000 ) / (tim[ix] - tim[ix-8]);
-         vspd.append(wrk);  // Vertical Speed in m/min
+         if (tim[ix] - tim[ixh] > 120000)   // Values in timh are in milliseconds
+         {
+             wrk = ( (dst[ix] - dst[ixh]) * 3600000 ) / (tim[ix] - tim[ixh]);
+             hspd.append(wrk);  // Horizontal Speed in kmh
+             wrk = ( (ele[ix] - ele[ixh]) * 60000 ) / (tim[ix] - tim[ixh]);
+             vspd.append(wrk);  // Vertical Speed in m/min
+             tim2.append(tim[ix]);
+             ixh = ix;
+         }
      }
 }
 
@@ -166,7 +172,8 @@ void GpsPlot::doPlot()
 {
     // Common data to all plots.
     pData->trkName = ui->dspTrackName->text();
-    pData->trkDate =trkDate;
+    pData->trkDate = trkDate;
+    pData->manScale = false;
     // Choose plot from radio button and set up data.
     if (ui->rbAltTime->isChecked())
     {
@@ -201,6 +208,19 @@ void GpsPlot::doPlot()
     else if (ui->rbLatLon->isChecked())
     {
         // Lat / Lon // TODO - Fix scaling to be the same on both axes.
+        pData->xLo = (floor(lonMin * 100)) / 100;
+        pData->xHi = (ceil(lonMax * 100)) / 100;
+        pData->yLo = (floor(latMin * 100)) / 100;
+        pData->yHi = (ceil(latMax * 100)) / 100;
+        if ((pData->yHi - pData->yLo) > (pData->xHi - pData->xLo))
+        {
+            pData->xHi = pData->xLo + (pData->yHi - pData->yLo);
+        }
+        else
+        {
+            pData->yHi = pData->yLo + (pData->xHi - pData->xLo);
+        }
+        pData->manScale = true;
         pData->xData = lon;
         pData->yData = lat;
         pData->xLabel = "Longitude";
@@ -210,7 +230,7 @@ void GpsPlot::doPlot()
     }
     else if (ui->rbHspdTim->isChecked())
     {
-        pData->xData = tim;
+        pData->xData = tim2;
         pData->yData = hspd;
         pData->xLabel = "Time";
         pData->yLabel = "Horzontal Speed (kmh)";
@@ -219,12 +239,18 @@ void GpsPlot::doPlot()
     }
     else if (ui->rbVspdTim->isChecked())
     {
-        pData->xData = tim;
+        pData->xData = tim2;
         pData->yData = vspd;
         pData->xLabel = "Time";
         pData->yLabel = "Vertical Speed (m per minute)";
         pData->xType = "datetime";
         pData->yType = "double";
+    }
+    else if (ui->rbFile->isChecked())
+    {
+        writeFile();
+        QMessageBox::information(this, "Notification", "File written");
+        return;
     }
     // Plot requested Graph
     GpGraph *gg = new GpGraph(this);
@@ -233,6 +259,21 @@ void GpsPlot::doPlot()
     gg->exec();
     delete gg;
 
+}
+
+void GpsPlot::writeFile()
+{
+    QFile oFile(QDir::homePath() + QDir::separator() + "osm" + QDir::separator() + "track.txt", this);
+    if (!oFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        QMessageBox::critical(this, tr("ERROR"), tr("Unable to open track.txt for writing:") + oFile.errorString());
+        return;
+    }
+    QTextStream tStrm(&oFile);
+    for (int ix = 0; ix < tim.count(); ix++)
+    {
+        tStrm << (QwtDate::toDateTime(tim[ix])).toString(Qt::ISODate) << "\t" << lat[ix] << "\t" << lon[ix] << "\t" << ele[ix] << endl;
+    }
 }
 
 void GpsPlot::doClose()

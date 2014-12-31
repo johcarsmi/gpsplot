@@ -17,6 +17,11 @@ public:
     QVector <double> yData;
     QString trkName;
     QString trkDate;
+    bool manScale;
+    double xLo;
+    double xHi;
+    double yLo;
+    double yHi;
 };
 
 #endif // PLOTDATA_H

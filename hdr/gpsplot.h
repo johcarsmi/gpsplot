@@ -1,7 +1,9 @@
 #ifndef GPSPLOT_H
 #define GPSPLOT_H
 
+#include <QFile>
 #include <QMainWindow>
+#include <QTextStream>
 #include <QVector>
 #include <QXmlStreamReader>
 
@@ -33,8 +35,15 @@ private:
     QVector <double> dst;   // Distance
     QVector <double> hspd;  // Horizontal Speed
     QVector <double> vspd;  // Vertical Speed
+    QVector <double> tim2;  // Data at chosen time interval
+    double latMax;
+    double latMin;
+    double lonMax;
+    double lonMin;
     bool firsttime;
     QString trkDate;
+    QFile oFile;
+    QTextStream tStrm;
 
     void processFile(const QString &);
     void process_trk(QXmlStreamReader &);
@@ -42,7 +51,7 @@ private:
     void createGraph();
     void calcDst();
     void calcSpeed();
-    void calcSpeed2();
+    void writeFile();
     PlotData *pData;
     GpGraph *ggForm;
 

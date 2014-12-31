@@ -43,16 +43,18 @@ void GpGraph::ggLayout()
     ui->dspTrkDate->setText(ggData->trkDate);
     ui->ggPlotArea->setTitle(ggData->trkName);
     ui->ggPlotArea->setCanvasBackground(Qt::white);
+
     // Label on Y axis.
     ui->ggPlotArea->setAxisTitle(QwtPlot::yLeft, ggData->yLabel);
 
-    if (ggData->xType == "datetime")
+    if (ggData->xType == "datetime")    // Set up a date scale if x axis contains a time.
     {
         dsd->setDateFormat(QwtDate::Minute, QString("hh:mm"));
         dsd->setDateFormat(QwtDate::Hour, QString("hh:mm"));
         ui->ggPlotArea->setAxisScaleDraw(QwtPlot::xBottom, dsd);
         ui->ggPlotArea->setAxisScaleEngine(QwtPlot::xBottom, dse);
     }
+
     //      label on X axis.
     QFont fnt("Liberation Sans", 8);
     ui->ggPlotArea->setAxisFont(QwtPlot::xBottom, fnt);
@@ -63,8 +65,15 @@ void GpGraph::ggLayout()
     //qDebug() << ((QwtDateScaleDraw*)ui->ggPlotArea->axisScaleDraw(QwtPlot::xBottom))->dateFormat(QwtDate::Minute);
     // Shows that the plot area has the correct format string.
 
-
-    //      distance on X axis.
+    //      Manual scales if requested
+    if (ggData->manScale)
+    {
+        QwtScaleDiv *mXscale = new QwtScaleDiv(ggData->xLo, ggData->xHi);
+        QwtScaleDiv *mYscale = new QwtScaleDiv(ggData->yLo, ggData->yHi);
+        // TODO: Set up axiss ticks.
+        ui->ggPlotArea->setAxisScaleDiv(QwtPlot::xBottom, *mXscale);
+        ui->ggPlotArea->setAxisScaleDiv(QwtPlot::yLeft, *mYscale);
+    }
 
     grd->attach( ui->ggPlotArea);
     curv->setSamples(ggData->xData, ggData->yData);
