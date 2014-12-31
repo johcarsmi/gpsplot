@@ -28,3 +28,6 @@ FORMS    += frm/gpsplot.ui \
     frm/gpgraph.ui
 
 LIBS     += -L/usr/lib64 -lqwt
+
+OTHER_FILES += \
+    README
