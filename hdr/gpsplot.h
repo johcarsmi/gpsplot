@@ -40,6 +40,8 @@ private:
     double latMin;
     double lonMax;
     double lonMin;
+    double xCtr;
+    double yCtr;
     bool firsttime;
     QString trkDate;
     QFile oFile;

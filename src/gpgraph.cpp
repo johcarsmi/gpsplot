@@ -68,11 +68,8 @@ void GpGraph::ggLayout()
     //      Manual scales if requested
     if (ggData->manScale)
     {
-        QwtScaleDiv *mXscale = new QwtScaleDiv(ggData->xLo, ggData->xHi);
-        QwtScaleDiv *mYscale = new QwtScaleDiv(ggData->yLo, ggData->yHi);
-        // TODO: Set up axiss ticks.
-        ui->ggPlotArea->setAxisScaleDiv(QwtPlot::xBottom, *mXscale);
-        ui->ggPlotArea->setAxisScaleDiv(QwtPlot::yLeft, *mYscale);
+        ui->ggPlotArea->setAxisScale(QwtPlot::xBottom, ggData->xLo, ggData->xHi, 0);
+        ui->ggPlotArea->setAxisScale(QwtPlot::yLeft, ggData->yLo, ggData->yHi, 0);
     }
 
     grd->attach( ui->ggPlotArea);

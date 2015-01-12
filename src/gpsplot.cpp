@@ -207,18 +207,22 @@ void GpsPlot::doPlot()
     }
     else if (ui->rbLatLon->isChecked())
     {
-        // Lat / Lon // TODO - Fix scaling to be the same on both axes.
+        // Lat / Lon - Make scaling to be the same on both axes and centre track plot.
         pData->xLo = (floor(lonMin * 100)) / 100;
         pData->xHi = (ceil(lonMax * 100)) / 100;
+        xCtr = (pData->xHi + pData->xLo)/2;
         pData->yLo = (floor(latMin * 100)) / 100;
         pData->yHi = (ceil(latMax * 100)) / 100;
+        yCtr = (pData->yHi + pData->yLo)/2;
         if ((pData->yHi - pData->yLo) > (pData->xHi - pData->xLo))
         {
-            pData->xHi = pData->xLo + (pData->yHi - pData->yLo);
+            pData->xLo = xCtr - (pData->yHi - pData->yLo) / 2;
+            pData->xHi = xCtr + (pData->yHi - pData->yLo / 2);
         }
         else
         {
-            pData->yHi = pData->yLo + (pData->xHi - pData->xLo);
+            pData->yLo = yCtr - (pData->xHi - pData->xLo) / 2;
+            pData->yHi = yCtr + (pData->xHi - pData->xLo) / 2;
         }
         pData->manScale = true;
         pData->xData = lon;
