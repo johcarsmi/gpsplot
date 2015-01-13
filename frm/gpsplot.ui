@@ -15,7 +15,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0" colspan="2">
+    <item row="0" column="0">
      <layout class="QHBoxLayout" name="hlName">
       <item>
        <widget class="QLabel" name="lblTrack">
@@ -58,7 +58,99 @@
       </item>
      </layout>
     </item>
-    <item row="1" column="1">
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="hlLength">
+      <item>
+       <widget class="QLabel" name="lblTrackLength">
+        <property name="minimumSize">
+         <size>
+          <width>130</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Track Length (Kilometers)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="dspTrackLength">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="hsLength">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="0">
+     <layout class="QHBoxLayout" name="hlTime">
+      <item>
+       <widget class="QLabel" name="lblTrack_Time">
+        <property name="minimumSize">
+         <size>
+          <width>70</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>70</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Track Time</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="dspTrackTime">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="hsTime">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item row="3" column="1">
      <spacer name="vs0">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -71,7 +163,7 @@
       </property>
      </spacer>
     </item>
-    <item row="2" column="0" colspan="2">
+    <item row="4" column="0">
      <widget class="QGroupBox" name="gbPlotSelect">
       <property name="minimumSize">
        <size>
@@ -145,7 +237,7 @@
       </layout>
      </widget>
     </item>
-    <item row="3" column="1">
+    <item row="5" column="0">
      <spacer name="vs1">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -158,8 +250,8 @@
       </property>
      </spacer>
     </item>
-    <item row="4" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout">
+    <item row="6" column="0">
+     <layout class="QHBoxLayout" name="hlButtons">
       <item>
        <widget class="QPushButton" name="pbClose">
         <property name="minimumSize">

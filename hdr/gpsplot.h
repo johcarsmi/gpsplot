@@ -1,6 +1,7 @@
 #ifndef GPSPLOT_H
 #define GPSPLOT_H
 
+#include <QDateTime>
 #include <QFile>
 #include <QMainWindow>
 #include <QTextStream>
@@ -46,6 +47,8 @@ private:
     QString trkDate;
     QFile oFile;
     QTextStream tStrm;
+    QDateTime stTime;
+    int elapsedTime;
 
     void processFile(const QString &);
     void process_trk(QXmlStreamReader &);
@@ -54,6 +57,7 @@ private:
     void calcDst();
     void calcSpeed();
     void writeFile();
+    QString calcElapsed(int &);
     PlotData *pData;
     GpGraph *ggForm;
 

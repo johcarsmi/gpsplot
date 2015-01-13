@@ -67,7 +67,7 @@ void GpsPlot::processFile(const QString & inFile)
 void GpsPlot::process_trk(QXmlStreamReader & inXml)
 {
     inXml.readNextStartElement();
-    qDebug() << inXml.name();                       // DEBUG
+    //qDebug() << inXml.name();                       // DEBUG
     eleText = inXml.readElementText(QXmlStreamReader::SkipChildElements);
     qDebug() << eleText;
     ui->dspTrackName->setText(eleText);
@@ -76,8 +76,10 @@ void GpsPlot::process_trk(QXmlStreamReader & inXml)
         if (inXml.name() == tr("trkseg")) break;
         inXml.skipCurrentElement();
     }
-    qDebug() << inXml.name();                   // DEBUG
+    //qDebug() << inXml.name();                   // DEBUG
     process_trkseg(inXml);
+    ui->dspTrackLength->setText(tr("%1").arg(dst[dst.count() - 1]));
+    ui->dspTrackTime->setText(calcElapsed(elapsedTime));
 }
 
 void GpsPlot::process_trkseg(QXmlStreamReader & inXml)
@@ -127,10 +129,16 @@ void GpsPlot::process_trkseg(QXmlStreamReader & inXml)
             if (inXml.name() == tr("time"))
             {
                 qdt = QDateTime::fromString(inXml.readElementText(), Qt::ISODate);
-                if (firsttime) trkDate = qdt.toString(Qt::SystemLocaleShortDate).left(10); firsttime = false;
+                if (firsttime)
+                {
+                    stTime = qdt;
+                    trkDate = qdt.toString(Qt::SystemLocaleShortDate).left(10);
+                    firsttime = false;
+                }
                 tim.append(QwtDate::toDouble(qdt));
             }
         }
+        elapsedTime = stTime.secsTo(qdt);
     }
     calcDst();
 }
@@ -166,6 +174,17 @@ void GpsPlot::calcSpeed()   // Taking each reading n seconds apart.
              ixh = ix;
          }
      }
+}
+
+QString GpsPlot::calcElapsed(int & inSecs)
+{
+    QString oStr;
+    int wrk = inSecs;
+    wrk = wrk / 60;
+    oStr = tr(" %1 min").arg(wrk % 60);
+    wrk = wrk / 60;
+    oStr = tr(" %1 hrs").arg(wrk) + oStr;
+    return oStr;
 }
 
 void GpsPlot::doPlot()
