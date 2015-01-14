@@ -164,7 +164,7 @@ void GpsPlot::calcSpeed()   // Taking each reading n seconds apart.
      tim2.append(tim[0]);
      for (int ix = 1; ix < dst.count(); ix++)
      {
-         if (tim[ix] - tim[ixh] > 120000)   // Values in timh are in milliseconds
+         if (tim[ix] - tim[ixh] > 120000)   // Values in tim are in milliseconds
          {
              wrk = ( (dst[ix] - dst[ixh]) * 3600000 ) / (tim[ix] - tim[ixh]);
              hspd.append(wrk);  // Horizontal Speed in kmh
@@ -236,7 +236,7 @@ void GpsPlot::doPlot()
         if ((pData->yHi - pData->yLo) > (pData->xHi - pData->xLo))
         {
             pData->xLo = xCtr - (pData->yHi - pData->yLo) / 2;
-            pData->xHi = xCtr + (pData->yHi - pData->yLo / 2);
+            pData->xHi = xCtr + (pData->yHi - pData->yLo) / 2;
         }
         else
         {
