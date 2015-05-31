@@ -22,6 +22,7 @@ public:
     double xHi;
     double yLo;
     double yHi;
+    bool latlon;
 };
 
 #endif // PLOTDATA_H

@@ -193,6 +193,7 @@ void GpsPlot::doPlot()
     pData->trkName = ui->dspTrackName->text();
     pData->trkDate = trkDate;
     pData->manScale = false;
+    pData->latlon = false;
     // Choose plot from radio button and set up data.
     if (ui->rbAltTime->isChecked())
     {
@@ -227,6 +228,7 @@ void GpsPlot::doPlot()
     else if (ui->rbLatLon->isChecked())
     {
         // Lat / Lon - Make scaling to be the same on both axes and centre track plot.
+        pData->latlon = true;
         pData->xLo = (floor(lonMin * 100)) / 100;
         pData->xHi = (ceil(lonMax * 100)) / 100;
         xCtr = (pData->xHi + pData->xLo)/2;

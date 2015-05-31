@@ -6,6 +6,7 @@
 #include <qwt_plot_grid.h>
 #include <qwt_date_scale_draw.h>
 #include <qwt_date_scale_engine.h>
+#include <qwt_plot_rescaler.h>
 
 #include "hdr/plotdata.h"
 
@@ -20,6 +21,12 @@ GpGraph::GpGraph(QWidget *parent) :
 GpGraph::~GpGraph()
 {
     delete ui;
+}
+
+void GpGraph::resizeEvent(QResizeEvent *e)   // Trap the form resize event to allow the graph to be resized to match.
+{                                            // DOESN'T WORK.
+    QDialog::resizeEvent(e);
+    doResize();
 }
 
 void GpGraph::doClose()
@@ -72,10 +79,31 @@ void GpGraph::ggLayout()
         ui->ggPlotArea->setAxisScale(QwtPlot::yLeft, ggData->yLo, ggData->yHi, 0);
     }
 
+    if (ggData->latlon) // If lat/lon plot then force aspect ratio.
+    {
+        d_rescaler = new QwtPlotRescaler(ui->ggPlotArea->canvas(),QwtPlot::xBottom,QwtPlotRescaler::Fixed);
+
+        if ( (ggData->xHi - ggData->xLo) < (ggData->yHi - ggData->yLo) )
+        {
+            d_rescaler->setReferenceAxis(QwtPlot::yLeft);
+            d_rescaler->setAspectRatio(QwtPlot::xBottom, 1.0);
+        }
+        else
+        {
+            d_rescaler->setReferenceAxis(QwtPlot::xBottom);
+            d_rescaler->setAspectRatio(QwtPlot::yLeft, 1.0);
+        }
+    }
+
     grd->attach( ui->ggPlotArea);
     curv->setSamples(ggData->xData, ggData->yData);
     curv->setRenderHint(QwtPlotItem::RenderAntialiased, true);
     curv->attach(ui->ggPlotArea);
     ui->ggPlotArea->replot();
 
+}
+
+void GpGraph::doResize()
+{
+    ui->ggPlotArea->replot();
 }
