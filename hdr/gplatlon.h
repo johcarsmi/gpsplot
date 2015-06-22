@@ -31,8 +31,9 @@ public:
     void ggAddData (PlotData *);
     void ggLayout();
     QImage bgImage;
-    QVector<QPoint> *trkPlot;
-    QBrush bgBrush;
+    QVector<QPoint> *trkPlot;   // For track in pixel coordinates.
+    int pwH;    // Plot window height
+    int pwW;    // Plot window width
 
 private:
     Ui::GpLatLon *ui;
@@ -47,7 +48,6 @@ private:
 
 private slots:
     void doClose();
-    void doGetBackground();
     void loadBG();
 
 };

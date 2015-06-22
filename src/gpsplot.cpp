@@ -28,7 +28,7 @@ GpsPlot::~GpsPlot()
     delete pData;
 }
 
-void GpsPlot::doOpen()
+void GpsPlot::doOpen()  // Prompt the use with a FileOpen dialog and process the file selected.
 {
     fileName = QFileDialog::getOpenFileName(this, tr("Open track file"), QDir::homePath(), tr("GPS track files (*.gpx)"));
     if (fileName != "")
@@ -38,7 +38,7 @@ void GpsPlot::doOpen()
     }
 }
 
-void GpsPlot::processFile(const QString & inFile)
+void GpsPlot::processFile(const QString & inFile)   // Create XmlStreamReader and
 {
     QFile gpxFile(inFile);
     if (!gpxFile.open(QFile::ReadOnly | QFile::Text ) )
@@ -53,23 +53,23 @@ void GpsPlot::processFile(const QString & inFile)
                 xRead.raiseError(tr("Not a gpx file"));
                 return; }
         }
-        while (xRead.readNextStartElement())        // Skip unwanted elements.
+        while (xRead.readNextStartElement())        // Skip unwanted elements stopping on the 'trk' element.
         {
 //          qDebug() << xRead.name();               // DEBUG
             if (xRead.name() == tr("trk")) break;
             xRead.skipCurrentElement();
         }
-        qDebug() << xRead.name();                   // DEBUG
+//        qDebug() << xRead.name();                   // DEBUG
         process_trk(xRead);
         gpxFile.close();
  }
 
-void GpsPlot::process_trk(QXmlStreamReader & inXml)
+void GpsPlot::process_trk(QXmlStreamReader & inXml) // Process the 'trk' element data and process track segment elements.
 {
     inXml.readNextStartElement();
     //qDebug() << inXml.name();                       // DEBUG
     eleText = inXml.readElementText(QXmlStreamReader::SkipChildElements);
-    qDebug() << eleText;
+//    qDebug() << eleText;
     ui->dspTrackName->setText(eleText);
     while (inXml.readNextStartElement())        // Skip unwanted elements.
     {
@@ -101,11 +101,11 @@ void GpsPlot::process_trkseg(QXmlStreamReader & inXml)
         {
             // qDebug()  << inXml.tokenString() << inXml.name();                   // DEBUG
             if (inXml.name() == tr("trkseg"))
-            {
+            {   // Ignore track segments and process only track points.
                 continue;
             }
             if (inXml.name() == tr("trkpt"))
-            {
+            {   // Extract the lat and lon.
                 attr = inXml.attributes();
                 lat.append(QString(attr.value("lat").toString()).toDouble(&dok));
                 lon.append(QString(attr.value("lon").toString()).toDouble(&dok));
@@ -123,11 +123,11 @@ void GpsPlot::process_trkseg(QXmlStreamReader & inXml)
                 }
             }
             if (inXml.name() == tr("ele"))
-            {
+            {   // Extract the elevation.
                 ele.append(inXml.readElementText().toDouble(&dok));
             }
             if (inXml.name() == tr("time"))
-            {
+            {   // Extract the date/time and convert to a QwtDate.
                 qdt = QDateTime::fromString(inXml.readElementText(), Qt::ISODate);
                 if (firsttime)
                 {
@@ -138,7 +138,7 @@ void GpsPlot::process_trkseg(QXmlStreamReader & inXml)
                 tim.append(QwtDate::toDouble(qdt));
             }
         }
-        elapsedTime = stTime.secsTo(qdt);
+        elapsedTime = stTime.secsTo(qdt);   // When get here all points have been processed.
     }
     calcDst();
 }
@@ -155,8 +155,8 @@ void GpsPlot::calcDst()
     calcSpeed();
 }
 
-void GpsPlot::calcSpeed()   // Taking each reading n seconds apart.
-{
+void GpsPlot::calcSpeed()   // Taking each reading 120 seconds apart.
+{   // The error on the position recorded - especially the elevation - means that speed between adjacent points are meaningless.
      double wrk = 0.0;
      int ixh = 0;
      hspd.append(0.0);
@@ -164,7 +164,7 @@ void GpsPlot::calcSpeed()   // Taking each reading n seconds apart.
      tim2.append(tim[0]);
      for (int ix = 1; ix < dst.count(); ix++)
      {
-         if (tim[ix] - tim[ixh] > 120000)   // Values in tim are in milliseconds
+         if (tim[ix] - tim[ixh] > 120000)   // Values in tim are in milliseconds. 120 seconds gave a reasonable result.
          {
              wrk = ( (dst[ix] - dst[ixh]) * 3600000 ) / (tim[ix] - tim[ixh]);
              hspd.append(wrk);  // Horizontal Speed in kmh
@@ -176,7 +176,7 @@ void GpsPlot::calcSpeed()   // Taking each reading n seconds apart.
      }
 }
 
-QString GpsPlot::calcElapsed(int & inSecs)
+QString GpsPlot::calcElapsed(int & inSecs)  // Returns a string of hours and minutes from an input of seconds.
 {
     QString oStr;
     int wrk = inSecs;
@@ -252,7 +252,7 @@ void GpsPlot::doPlot()
         pData->yLabel = "Latitude";
         pData->xType = "double";
         pData->yType = "double";
-        if(ui->rbMapTrack->isChecked())
+        if(ui->rbMapTrack->isChecked())     // Want plot on picture not graph.
         {
             GpLatLon *gl = new GpLatLon(this);
             gl->ggAddData(pData);
@@ -295,7 +295,7 @@ void GpsPlot::doPlot()
 
 }
 
-void GpsPlot::writeFile()
+void GpsPlot::writeFile()   // Write a tab separated file with the track point data.
 {
     QFile oFile(QDir::homePath() + QDir::separator() + "osm" + QDir::separator() + "track.txt", this);
     if (!oFile.open(QIODevice::WriteOnly | QIODevice::Truncate))

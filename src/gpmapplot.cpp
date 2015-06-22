@@ -10,7 +10,7 @@ GpMapPlot::GpMapPlot(QWidget *parent) : QWidget(parent)
 
 GpMapPlot::~GpMapPlot()
 {
-
+    // Leave desctruction to Qt.
 }
 
 void GpMapPlot::paintEvent(QPaintEvent *event)
@@ -24,8 +24,8 @@ void GpMapPlot::paintEvent(QPaintEvent *event)
     trkPen.setWidth(1);
     // Draw the track
     paint.setPen(trkPen);
-//    paint.setRenderHint(QPainter::Antialiasing, true);
     paint.drawLines(*owner->trkPlot);
+    // Draw the start point.
     trkPen.setColor(QColor(255,0,0));
     paint.setPen(trkPen);
     QBrush trkBr(QColor(255, 0, 0));

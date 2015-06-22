@@ -12,6 +12,8 @@ GpLatLon::GpLatLon(QWidget *parent) :
 {
     ui->setupUi(this);
     trkPlot = new QVector<QPoint>();
+    pwW = ui->gllPlot->width();
+    pwH = ui->gllPlot->height();
 }
 
 GpLatLon::~GpLatLon()
@@ -21,7 +23,7 @@ GpLatLon::~GpLatLon()
 }
 
 void GpLatLon::resizeEvent(QResizeEvent *e)   // Trap the form resize event to allow the graph to be resized to match.
-{
+{   // Does nothing here - as yet!
     QDialog::resizeEvent(e);
     doResize();
 }
@@ -36,41 +38,37 @@ void GpLatLon::ggAddData(PlotData *inData)
     ggData = inData;
 }
 
-void GpLatLon::ggLayout()
+void GpLatLon::ggLayout()   //
 {
-
     ui->dspTrkName->setText(ggData->trkName);
     ui->dspTrkDate->setText(ggData->trkDate);
-
-    doGetBackground();
-}
-
-void GpLatLon::doGetBackground()
-{
+    // Calculate centre of plot.
     double _lat = ((ggData->yLo + ggData->yHi) / 2);
     double _lon = ((ggData->xLo + ggData->xHi) / 2);
+    // Calculate the limits of the downloaded map - used for plotting track later.
     int _zoom = 13;
-    lims = calcLimits(_lat, _lon, _zoom, 640, 640);
-    QUrl bgUrl(tr("https://maps.googleapis.com/maps/api/staticmap?center=%1,%2&zoom=%3&size=640x640&maptype=satellite&style=lightness:20").arg(_lat).arg(_lon).arg(_zoom));
+    lims = calcLimits(_lat, _lon, _zoom, pwW, pwH);
+    // Fire off map request.
+    QUrl bgUrl(tr("https://maps.googleapis.com/maps/api/staticmap?center=%1,%2&zoom=%3&size=%4x%5&maptype=satellite&style=lightness:20").arg(_lat).arg(_lon).arg(_zoom).arg(pwW).arg(pwH));
     bgImgData = new FileDownloader(bgUrl, this);
     connect(bgImgData, SIGNAL(downloaded()), this, SLOT (loadBG()));
+    // Convert lat/lon positions into pixel points for plotting track.
     calcLinePoints();
 }
 
-void GpLatLon::loadBG()  // When the download is complete repaint the plot area with a Google map background and the curve in cyan.
+void GpLatLon::loadBG()  // When the download is complete paint the plot area with a Google map.
 {
     bgImage.loadFromData(bgImgData->downloadedData());
-//  bgBrush = QBrush(bgImage);
     this->repaint();
 }
 
 void GpLatLon::doResize()
 {
-//    ui->gllPlot->replot();
+//    return;
 }
 
 edges GpLatLon::calcLimits(double &cLat, double &cLon, int iZoom, int iHgt, int iWdth)
-{
+{   // This is a Qt/C++ version of the Google javascript code for working out the limits of a google map image.
     edges el;
     double cpx, cpy, mpx, mpy;
     double wx = 0 - (iWdth / 2);
@@ -91,19 +89,19 @@ edges GpLatLon::calcLimits(double &cLat, double &cLon, int iZoom, int iHgt, int 
     mpy = (cpy * tiles) + wy;
     el.iMinLat = (2 * atan(exp(((mpy/tiles) - 128.0) / -(256.0 / (2.0 * M_PI)))) - (M_PI / 2.0)) / (M_PI / 180.0);
     el.iMaxLon = (((mpx/tiles) - 128.0) / (256.0 / 360.0));
-    qDebug() << el.iMinLat << el.iMinLon << el.iMaxLat << el.iMaxLon << cLat << cLon;
+//    qDebug() << el.iMinLat << el.iMinLon << el.iMaxLat << el.iMaxLon << cLat << cLon;
     return el;
 }
 
-void GpLatLon::calcLinePoints()
+void GpLatLon::calcLinePoints() // Convert lat/lon to the relevant pixel coordinates.
 {
     double hLat = lims.iMaxLat - lims.iMinLat;
     double wLon = lims.iMaxLon - lims.iMinLon;
     int ix = 0;
     while (ix < ggData->xData.size())
     {
-        trkPt.setX(640 * (ggData->xData[ix] - lims.iMinLon) / wLon);
-        trkPt.setY(640 * (lims.iMaxLat - ggData->yData[ix]) / hLat);
+        trkPt.setX(pwW * (ggData->xData[ix] - lims.iMinLon) / wLon);
+        trkPt.setY(pwH * (lims.iMaxLat - ggData->yData[ix]) / hLat);
         trkPlot->append(trkPt);
         ++ix;
     }
