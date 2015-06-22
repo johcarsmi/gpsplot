@@ -6,9 +6,6 @@
 #include <qwt_plot_grid.h>
 #include <qwt_date_scale_draw.h>
 #include <qwt_date_scale_engine.h>
-#include <qwt_plot_rescaler.h>
-
-#include "hdr/plotdata.h"
 
 
 GpGraph::GpGraph(QWidget *parent) :
@@ -21,6 +18,7 @@ GpGraph::GpGraph(QWidget *parent) :
 GpGraph::~GpGraph()
 {
     delete ui;
+//    delete curv;
 }
 
 void GpGraph::resizeEvent(QResizeEvent *e)   // Trap the form resize event to allow the graph to be resized to match.
@@ -41,7 +39,7 @@ void GpGraph::ggAddData(PlotData *inData)
 
 void GpGraph::ggLayout()
 {
-    QwtPlotCurve *curv = new QwtPlotCurve();
+    curv = new QwtPlotCurve();
     QwtPlotGrid *grd = new QwtPlotGrid();
     QwtDateScaleDraw *dsd = new QwtDateScaleDraw(Qt::UTC);
     QwtDateScaleEngine *dse = new QwtDateScaleEngine(Qt::UTC);
@@ -69,9 +67,6 @@ void GpGraph::ggLayout()
     ui->ggPlotArea->setAxisLabelAlignment(QwtPlot::xBottom, Qt::AlignRight);
     ui->ggPlotArea->setAxisLabelRotation(QwtPlot::xBottom, 90.0);
 
-    //qDebug() << ((QwtDateScaleDraw*)ui->ggPlotArea->axisScaleDraw(QwtPlot::xBottom))->dateFormat(QwtDate::Minute);
-    // Shows that the plot area has the correct format string.
-
     //      Manual scales if requested
     if (ggData->manScale)
     {
@@ -80,8 +75,8 @@ void GpGraph::ggLayout()
     }
 
     if (ggData->latlon) // If lat/lon plot then force aspect ratio.
-    {
-        d_rescaler = new QwtPlotRescaler(ui->ggPlotArea->canvas(),QwtPlot::xBottom,QwtPlotRescaler::Fixed);
+    {   // The form design of ggPlotArea has set a size and has set its QSizePolicy as Fixed.
+        d_rescaler = new QwtPlotRescaler(ui->ggPlotArea->canvas(),QwtPlot::yLeft,QwtPlotRescaler::Fixed);
 
         if ( (ggData->xHi - ggData->xLo) < (ggData->yHi - ggData->yLo) )
         {
@@ -93,6 +88,10 @@ void GpGraph::ggLayout()
             d_rescaler->setReferenceAxis(QwtPlot::xBottom);
             d_rescaler->setAspectRatio(QwtPlot::yLeft, 1.0);
         }
+    }
+    else    // Allow the plot area to fill the available space.
+    {
+        ui->ggPlotArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     }
 
     grd->attach( ui->ggPlotArea);
@@ -107,3 +106,4 @@ void GpGraph::doResize()
 {
     ui->ggPlotArea->replot();
 }
+

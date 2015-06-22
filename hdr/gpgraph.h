@@ -5,6 +5,7 @@
 
 #include <hdr/plotdata.h>
 
+#include <qwt_plot_curve.h>
 #include <qwt_plot_rescaler.h>
 
 namespace Ui {
@@ -28,11 +29,13 @@ public:
 private:
     Ui::GpGraph *ui;
     PlotData *ggData;
+    QwtPlotCurve *curv;
     QwtPlotRescaler *d_rescaler;
+
+    void doResize();
 
 private slots:
     void doClose();
-    void doResize();
 
 };
 

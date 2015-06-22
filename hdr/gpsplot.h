@@ -49,6 +49,8 @@ private:
     QTextStream tStrm;
     QDateTime stTime;
     int elapsedTime;
+    PlotData *pData;
+    GpGraph *ggForm;
 
     void processFile(const QString &);
     void process_trk(QXmlStreamReader &);
@@ -58,8 +60,6 @@ private:
     void calcSpeed();
     void writeFile();
     QString calcElapsed(int &);
-    PlotData *pData;
-    GpGraph *ggForm;
 
 private slots:
     void doClose();

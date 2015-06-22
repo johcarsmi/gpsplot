@@ -11,6 +11,7 @@
 #include <qwt_date.h>
 
 #include "hdr/latlon.h"
+#include "hdr/gplatlon.h"
 
 GpsPlot::GpsPlot(QWidget *parent) :
     QMainWindow(parent),
@@ -18,7 +19,6 @@ GpsPlot::GpsPlot(QWidget *parent) :
 {
     ui->setupUi(this);
     pData = new PlotData();
-    ui->rbUndef1->setVisible(false);
     ui->pbPlot->setEnabled(false);
 }
 
@@ -200,7 +200,7 @@ void GpsPlot::doPlot()
         // Time / Elevation.
         pData->xData = tim;
         pData->yData = ele;
-        pData->xLabel = "Time";
+        pData->xLabel = "Time (UTC)";
         pData->yLabel = "Elevation (m)";
         pData->xType = "datetime";
         pData->yType = "double";
@@ -220,12 +220,12 @@ void GpsPlot::doPlot()
         // Distance / Time.
         pData->xData = tim;
         pData->yData = dst;
-        pData->xLabel = "Time";
+        pData->xLabel = "Time (UTC)";
         pData->yLabel = "Distance (Kilometers)";
         pData->xType = "datetime";
         pData->yType = "double";
     }
-    else if (ui->rbLatLon->isChecked())
+    else if (ui->rbLatLon->isChecked() || ui->rbMapTrack->isChecked())
     {
         // Lat / Lon - Make scaling to be the same on both axes and centre track plot.
         pData->latlon = true;
@@ -252,12 +252,21 @@ void GpsPlot::doPlot()
         pData->yLabel = "Latitude";
         pData->xType = "double";
         pData->yType = "double";
+        if(ui->rbMapTrack->isChecked())
+        {
+            GpLatLon *gl = new GpLatLon(this);
+            gl->ggAddData(pData);
+            gl->ggLayout();
+            gl->exec();
+            delete gl;
+            return;
+        }
     }
     else if (ui->rbHspdTim->isChecked())
     {
         pData->xData = tim2;
         pData->yData = hspd;
-        pData->xLabel = "Time";
+        pData->xLabel = "Time (UTC)";
         pData->yLabel = "Horzontal Speed (kmh)";
         pData->xType = "datetime";
         pData->yType = "double";
@@ -266,7 +275,7 @@ void GpsPlot::doPlot()
     {
         pData->xData = tim2;
         pData->yData = vspd;
-        pData->xLabel = "Time";
+        pData->xLabel = "Time (UTC)";
         pData->yLabel = "Vertical Speed (m per minute)";
         pData->xType = "datetime";
         pData->yType = "double";

@@ -7,3 +7,5 @@ of graphs that can be obtained from the data.
 It uses the QwtPlot object from the QWT to present the graphs.
 
 It is a perpetual work in progress!
+
+The filedownloader code was taken straight from the Qt documentation site.

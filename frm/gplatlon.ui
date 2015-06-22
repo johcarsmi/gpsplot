@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GpGraph</class>
- <widget class="QDialog" name="GpGraph">
+ <class>GpLatLon</class>
+ <widget class="QDialog" name="GpLatLon">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>645</width>
-    <height>562</height>
+    <width>668</width>
+    <height>722</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -92,22 +92,6 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
-    <widget class="QwtPlot" name="ggPlotArea" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>480</width>
-       <height>480</height>
-      </size>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="0">
     <layout class="QHBoxLayout" name="hlButton">
      <item>
@@ -144,13 +128,29 @@
      </item>
     </layout>
    </item>
+   <item row="1" column="0">
+    <widget class="GpMapPlot" name="gllPlot" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>640</width>
+       <height>640</height>
+      </size>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QwtPlot</class>
+   <class>GpMapPlot</class>
    <extends>QWidget</extends>
-   <header location="global">qwt_plot.h</header>
+   <header location="global">hdr/gpmapplot.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
@@ -159,7 +159,7 @@
   <connection>
    <sender>pbClose</sender>
    <signal>clicked()</signal>
-   <receiver>GpGraph</receiver>
+   <receiver>GpLatLon</receiver>
    <slot>doClose()</slot>
    <hints>
     <hint type="sourcelabel">

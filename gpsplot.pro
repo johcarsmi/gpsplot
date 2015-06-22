@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml
+QT       += core gui xml network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,15 +17,22 @@ SOURCES  += src/main.cpp\
     src/gpsplot.cpp \
     src/latlon.cpp \
     src/gpgraph.cpp \
-    src/plotdata.cpp
+    src/plotdata.cpp \
+    src/filedownloader.cpp \
+    src/gplatlon.cpp \
+    src/gpmapplot.cpp
 
 HEADERS  += hdr/gpsplot.h \
     hdr/gpgraph.h \
     hdr/plotdata.h \
-    hdr/latlon.h
+    hdr/latlon.h \
+    hdr/filedownloader.h \
+    hdr/gplatlon.h \
+    hdr/gpmapplot.h
 
 FORMS    += frm/gpsplot.ui \
-    frm/gpgraph.ui
+    frm/gpgraph.ui \
+    frm/gplatlon.ui
 
 LIBS     += -L/usr/lib64 -lqwt
 
