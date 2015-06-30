@@ -14,6 +14,14 @@ GpLatLon::GpLatLon(QWidget *parent) :
     trkPlot = new QVector<QPoint>();
     pwW = ui->gllPlot->width();
     pwH = ui->gllPlot->height();
+    iPalS = ui->strtIco->palette();
+    iPalS.setColor(QPalette::Window ,Qt::red);
+    ui->strtIco->setAutoFillBackground(true);
+    ui->strtIco->setPalette(iPalS);
+    iPalE = ui->strtIco->palette();
+    iPalE.setColor(QPalette::Window ,Qt::blue);
+    ui->endIco->setAutoFillBackground(true);
+    ui->endIco->setPalette(iPalE);
 }
 
 GpLatLon::~GpLatLon()
@@ -59,7 +67,7 @@ void GpLatLon::ggLayout()   //
 void GpLatLon::loadBG()  // When the download is complete paint the plot area with a Google map.
 {
     bgImage.loadFromData(bgImgData->downloadedData());
-    this->repaint();
+    this->repaint();    // Also causes repaint of the subordinate GpMapPlot.
 }
 
 void GpLatLon::doResize()

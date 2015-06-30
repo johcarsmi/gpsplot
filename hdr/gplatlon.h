@@ -41,6 +41,8 @@ private:
     FileDownloader *bgImgData;
     edges lims;
     QPoint trkPt;
+    QPalette iPalS;
+    QPalette iPalE;
 
     void doResize();
     edges calcLimits(double & cLat, double & cLon, int iZoom, int iHgt, int iWdth);

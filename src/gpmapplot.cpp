@@ -5,7 +5,7 @@
 
 GpMapPlot::GpMapPlot(QWidget *parent) : QWidget(parent)
 {
-    owner = static_cast<GpLatLon*>(parent);
+    owner = static_cast<GpLatLon*>(parent); // To allow access to properties of GpLatLon class.
 }
 
 GpMapPlot::~GpMapPlot()
@@ -25,12 +25,17 @@ void GpMapPlot::paintEvent(QPaintEvent *event)
     // Draw the track
     paint.setPen(trkPen);
     paint.drawLines(*owner->trkPlot);
-    // Draw the start point.
-    trkPen.setColor(QColor(255,0,0));
+    // Draw the end point offset 1px right.
+    trkPen.setColor(Qt::blue);
     paint.setPen(trkPen);
-    QBrush trkBr(QColor(255, 0, 0));
+    QBrush trkBr(Qt::blue);
     paint.setBrush(trkBr);
-    paint.drawEllipse(owner->trkPlot->at(0).x(), owner->trkPlot->at(0).y(), 3, 3);
-
+    paint.drawEllipse(owner->trkPlot->at(owner->trkPlot->count() - 1).x() + 1, owner->trkPlot->at(owner->trkPlot->count() - 1).y(), 3, 3);
+    // Draw the start point offset 1px left so it overlays end point marker if the two coincide.
+    trkPen.setColor(Qt::red);
+    paint.setPen(trkPen);
+    trkBr.setColor(Qt::red);
+    paint.setBrush(trkBr);
+    paint.drawEllipse(owner->trkPlot->at(0).x() - 1, owner->trkPlot->at(0).y(), 3, 3);
     QWidget::paintEvent(event);
 }
