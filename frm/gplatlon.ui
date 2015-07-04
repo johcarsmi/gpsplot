@@ -204,6 +204,29 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QRadioButton" name="rbMap">
+       <property name="text">
+        <string>&amp;Map</string>
+       </property>
+       <property name="shortcut">
+        <string>Alt+M</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="rbSat">
+       <property name="text">
+        <string>&amp;Satellite</string>
+       </property>
+       <property name="shortcut">
+        <string>Alt+S</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item row="1" column="0">
@@ -242,7 +265,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>89</x>
-     <y>551</y>
+     <y>711</y>
     </hint>
     <hint type="destinationlabel">
      <x>202</x>
@@ -250,8 +273,42 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>rbMap</sender>
+   <signal>clicked()</signal>
+   <receiver>GpLatLon</receiver>
+   <slot>doMap()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>583</x>
+     <y>694</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>662</x>
+     <y>607</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rbSat</sender>
+   <signal>clicked()</signal>
+   <receiver>GpLatLon</receiver>
+   <slot>doSat()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>640</x>
+     <y>696</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>661</x>
+     <y>654</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>doClose()</slot>
+  <slot>doMap()</slot>
+  <slot>doSat()</slot>
  </slots>
 </ui>

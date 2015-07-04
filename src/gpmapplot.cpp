@@ -20,7 +20,7 @@ void GpMapPlot::paintEvent(QPaintEvent *event)
     paint.drawImage(0, 0, owner->bgImage);
     // Set up the pen for the track.
     QPen trkPen;
-    trkPen.setColor(QColor(0,255,255));
+    trkPen.setColor(owner->trkCol);
     trkPen.setWidth(1);
     // Draw the track
     paint.setPen(trkPen);

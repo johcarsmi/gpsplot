@@ -22,6 +22,8 @@ GpLatLon::GpLatLon(QWidget *parent) :
     iPalE.setColor(QPalette::Window ,Qt::blue);
     ui->endIco->setAutoFillBackground(true);
     ui->endIco->setPalette(iPalE);
+    bgType = "satellite";
+    trkCol = Qt::cyan;
 }
 
 GpLatLon::~GpLatLon()
@@ -51,17 +53,23 @@ void GpLatLon::ggLayout()   //
     ui->dspTrkName->setText(ggData->trkName);
     ui->dspTrkDate->setText(ggData->trkDate);
     // Calculate centre of plot.
-    double _lat = ((ggData->yLo + ggData->yHi) / 2);
-    double _lon = ((ggData->xLo + ggData->xHi) / 2);
+    _lat = ((ggData->yLo + ggData->yHi) / 2);
+    _lon = ((ggData->xLo + ggData->xHi) / 2);
     // Calculate the limits of the downloaded map - used for plotting track later.
-    int _zoom = 13;
+    _zoom = 13;
     lims = calcLimits(_lat, _lon, _zoom, pwW, pwH);
-    // Fire off map request.
-    QUrl bgUrl(tr("https://maps.googleapis.com/maps/api/staticmap?center=%1,%2&zoom=%3&size=%4x%5&maptype=satellite&style=lightness:20").arg(_lat).arg(_lon).arg(_zoom).arg(pwW).arg(pwH));
-    bgImgData = new FileDownloader(bgUrl, this);
-    connect(bgImgData, SIGNAL(downloaded()), this, SLOT (loadBG()));
     // Convert lat/lon positions into pixel points for plotting track.
     calcLinePoints();
+    // Fire off map request.
+    fireOffRequest();
+}
+
+void GpLatLon::fireOffRequest()
+{
+    QUrl bgUrl(tr("https://maps.googleapis.com/maps/api/staticmap?center=%1,%2&zoom=%3&size=%4x%5&maptype=%6&style=lightness:20").arg(_lat).arg(_lon).arg(_zoom).arg(pwW).arg(pwH).arg(bgType));
+//    QUrl bgUrl(tr("https://maps.googleapis.com/maps/api/staticmap?center=%1,%2&zoom=%3&size=%4x%5&maptype=%6").arg(_lat).arg(_lon).arg(_zoom).arg(pwW).arg(pwH).arg(bgType));
+    bgImgData = new FileDownloader(bgUrl, this);
+    connect(bgImgData, SIGNAL(downloaded()), this, SLOT (loadBG()));
 }
 
 void GpLatLon::loadBG()  // When the download is complete paint the plot area with a Google map.
@@ -112,5 +120,25 @@ void GpLatLon::calcLinePoints() // Convert lat/lon to the relevant pixel coordin
         trkPt.setY(pwH * (lims.iMaxLat - ggData->yData[ix]) / hLat);
         trkPlot->append(trkPt);
         ++ix;
+    }
+}
+
+void GpLatLon::doMap()
+{
+    if (ui->rbMap->isChecked())
+    {
+        bgType = "map";
+        trkCol = Qt::magenta;
+        fireOffRequest();
+    }
+}
+
+void GpLatLon::doSat()
+{
+    if (ui->rbSat->isChecked())
+    {
+        bgType = "satellite";
+        trkCol = Qt::cyan;
+        fireOffRequest();
     }
 }

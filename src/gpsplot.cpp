@@ -174,6 +174,7 @@ void GpsPlot::calcSpeed()   // Taking each reading 120 seconds apart.
              ixh = ix;
          }
      }
+     // qDebug() << ixh;
 }
 
 QString GpsPlot::calcElapsed(int & inSecs)  // Returns a string of hours and minutes from an input of seconds.
