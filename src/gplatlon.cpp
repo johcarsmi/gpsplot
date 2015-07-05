@@ -11,25 +11,24 @@ GpLatLon::GpLatLon(QWidget *parent) :
     ui(new Ui::GpLatLon)
 {
     ui->setupUi(this);
-    trkPlot = new QVector<QPoint>();
-    pwW = ui->gllPlot->width();
+    trkPlot = new QVector<QPoint>();        // Initialise track plot pixel vector
+    pwW = ui->gllPlot->width();             // Get width and height of plot area.
     pwH = ui->gllPlot->height();
-    iPalS = ui->strtIco->palette();
+    iPalS = ui->strtIco->palette();         // Create a red square as a key for the start point.
     iPalS.setColor(QPalette::Window ,Qt::red);
     ui->strtIco->setAutoFillBackground(true);
     ui->strtIco->setPalette(iPalS);
-    iPalE = ui->strtIco->palette();
+    iPalE = ui->strtIco->palette();         // Create a blue square as a key for the end point.
     iPalE.setColor(QPalette::Window ,Qt::blue);
     ui->endIco->setAutoFillBackground(true);
     ui->endIco->setPalette(iPalE);
-    bgType = "satellite";
+    bgType = "satellite";                   // Set default view and track colour.
     trkCol = Qt::cyan;
 }
 
 GpLatLon::~GpLatLon()
 {
     delete ui;
-//    delete trkPlot;
 }
 
 void GpLatLon::resizeEvent(QResizeEvent *e)   // Trap the form resize event to allow the graph to be resized to match.
@@ -55,19 +54,20 @@ void GpLatLon::ggLayout()   //
     // Calculate centre of plot.
     _lat = ((ggData->yLo + ggData->yHi) / 2);
     _lon = ((ggData->xLo + ggData->xHi) / 2);
-    // Calculate the limits of the downloaded map - used for plotting track later.
+    // Set zoom level for call to Google. 13 is an arbitary number that seems to work!
     _zoom = 13;
+    // Calculate the limits of the downloaded map - used for plotting track later.
     lims = calcLimits(_lat, _lon, _zoom, pwW, pwH);
     // Convert lat/lon positions into pixel points for plotting track.
-    calcLinePoints();
+    calcLinePoints(lims, trkPlot);
     // Fire off map request.
-    fireOffRequest();
+    fireOffRequest(_lat, _lon, _zoom, pwW, pwH, bgType);
 }
 
-void GpLatLon::fireOffRequest()
+void GpLatLon::fireOffRequest(double &inLat, double &inLon, int &inZoom, int &inPw, int &inPh, QString &inType)
 {
-    QUrl bgUrl(tr("https://maps.googleapis.com/maps/api/staticmap?center=%1,%2&zoom=%3&size=%4x%5&maptype=%6&style=lightness:20").arg(_lat).arg(_lon).arg(_zoom).arg(pwW).arg(pwH).arg(bgType));
-//    QUrl bgUrl(tr("https://maps.googleapis.com/maps/api/staticmap?center=%1,%2&zoom=%3&size=%4x%5&maptype=%6").arg(_lat).arg(_lon).arg(_zoom).arg(pwW).arg(pwH).arg(bgType));
+    QUrl bgUrl(tr("https://maps.googleapis.com/maps/api/staticmap?center=%1,%2&zoom=%3&size=%4x%5&maptype=%6&style=lightness:20")\
+               .arg(inLat).arg(inLon).arg(inZoom).arg(inPw).arg(inPh).arg(inType));
     bgImgData = new FileDownloader(bgUrl, this);
     connect(bgImgData, SIGNAL(downloaded()), this, SLOT (loadBG()));
 }
@@ -109,36 +109,37 @@ edges GpLatLon::calcLimits(double &cLat, double &cLon, int iZoom, int iHgt, int 
     return el;
 }
 
-void GpLatLon::calcLinePoints() // Convert lat/lon to the relevant pixel coordinates.
+void GpLatLon::calcLinePoints(edges &inLim, QVector<QPoint> *ptrPtVec) // Convert lat/lon to the relevant pixel coordinates.
 {
-    double hLat = lims.iMaxLat - lims.iMinLat;
-    double wLon = lims.iMaxLon - lims.iMinLon;
+    QPoint trkPt;
+    double hLat = inLim.iMaxLat - inLim.iMinLat;
+    double wLon = inLim.iMaxLon - inLim.iMinLon;
     int ix = 0;
     while (ix < ggData->xData.size())
     {
-        trkPt.setX(pwW * (ggData->xData[ix] - lims.iMinLon) / wLon);
-        trkPt.setY(pwH * (lims.iMaxLat - ggData->yData[ix]) / hLat);
-        trkPlot->append(trkPt);
+        trkPt.setX(pwW * (ggData->xData[ix] - inLim.iMinLon) / wLon);
+        trkPt.setY(pwH * (inLim.iMaxLat - ggData->yData[ix]) / hLat);
+        ptrPtVec->append(trkPt);
         ++ix;
     }
 }
 
-void GpLatLon::doMap()
+void GpLatLon::doMap()  // Plot against Google Maps background using a magenta pen.
 {
     if (ui->rbMap->isChecked())
     {
         bgType = "map";
         trkCol = Qt::magenta;
-        fireOffRequest();
+        fireOffRequest(_lat, _lon, _zoom, pwW, pwH, bgType);
     }
 }
 
-void GpLatLon::doSat()
+void GpLatLon::doSat()  // Plot against Google Earth background using a cyan pen.
 {
     if (ui->rbSat->isChecked())
     {
         bgType = "satellite";
         trkCol = Qt::cyan;
-        fireOffRequest();
+        fireOffRequest(_lat, _lon, _zoom, pwW, pwH, bgType);
     }
 }

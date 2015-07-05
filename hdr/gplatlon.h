@@ -39,7 +39,6 @@ private:
     PlotData *ggData;
     FileDownloader *bgImgData;
     edges lims;
-    QPoint trkPt;
     QPalette iPalS;
     QPalette iPalE;
     QString bgType;
@@ -51,8 +50,8 @@ private:
 
     void doResize();
     edges calcLimits(double & cLat, double & cLon, int iZoom, int iHgt, int iWdth);
-    void calcLinePoints();
-    void fireOffRequest();
+    void calcLinePoints(edges&, QVector<QPoint>*);
+    void fireOffRequest(double&, double&, int&, int&, int&, QString&);
 
 private slots:
     void doClose();

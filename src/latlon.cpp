@@ -64,8 +64,10 @@ double distance(double lat1, double lon1, double lat2, double lon2, char unit) {
   return (dist);
 }
 
+
+/* This bit lifted from Stack Overflow and replaced % with fmod(). */
 double angleFromCoordinates(double lat1, double long1, double lat2, double long2)
-{   // lifted from Stack Overflow and replaced % with fmod().
+{
     double dLon = (long2 - long1);
 
     double y = sin(dLon) * cos(lat2);

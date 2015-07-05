@@ -10,7 +10,7 @@ GpMapPlot::GpMapPlot(QWidget *parent) : QWidget(parent)
 
 GpMapPlot::~GpMapPlot()
 {
-    // Leave desctruction to Qt.
+    // Leave destruction to Qt.
 }
 
 void GpMapPlot::paintEvent(QPaintEvent *event)
