@@ -66,6 +66,7 @@ void GpLatLon::ggLayout()   //
 
 void GpLatLon::fireOffRequest(double &inLat, double &inLon, int &inZoom, int &inPw, int &inPh, QString &inType)
 {
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     QUrl bgUrl(tr("https://maps.googleapis.com/maps/api/staticmap?center=%1,%2&zoom=%3&size=%4x%5&maptype=%6&style=lightness:20")\
                .arg(inLat).arg(inLon).arg(inZoom).arg(inPw).arg(inPh).arg(inType));
     bgImgData = new FileDownloader(bgUrl, this);
@@ -76,6 +77,7 @@ void GpLatLon::loadBG()  // When the download is complete paint the plot area wi
 {
     bgImage.loadFromData(bgImgData->downloadedData());
     this->repaint();    // Also causes repaint of the subordinate GpMapPlot.
+    QApplication::restoreOverrideCursor();
 }
 
 void GpLatLon::doResize()

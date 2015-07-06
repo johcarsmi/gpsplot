@@ -7,6 +7,7 @@
 #include <QTextStream>
 #include <QVector>
 #include <QXmlStreamReader>
+#include <QSettings>
 
 #include "hdr/plotdata.h"
 #include "hdr/gpgraph.h"
@@ -51,6 +52,9 @@ private:
     int elapsedTime;
     PlotData *pData;
     GpGraph *ggForm;
+    QSettings * settings;
+    const QString stgsFile = ".gpsplot.settings";
+    QString curDir;
 
     void processFile(const QString &);
     void process_trk(QXmlStreamReader &);

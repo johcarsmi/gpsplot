@@ -20,6 +20,8 @@ GpsPlot::GpsPlot(QWidget *parent) :
     ui->setupUi(this);
     pData = new PlotData();
     ui->pbPlot->setEnabled(false);
+    settings = new QSettings(QDir::homePath() + QDir::separator() + stgsFile, QSettings::IniFormat, this);
+    curDir = settings->value("directory", QDir::homePath() + QDir::separator()).toString();
 }
 
 GpsPlot::~GpsPlot()
@@ -30,12 +32,20 @@ GpsPlot::~GpsPlot()
 
 void GpsPlot::doOpen()  // Prompt the use with a FileOpen dialog and process the file selected.
 {
-    fileName = QFileDialog::getOpenFileName(this, tr("Open track file"), QDir::homePath(), tr("GPS track files (*.gpx)"));
+    fileName = QFileDialog::getOpenFileName(this, tr("Open track file"), curDir, tr("GPS track files (*.gpx)"));
     if (fileName != "")
     {
         processFile(fileName);
         if (!(tim.isEmpty())) ui->pbPlot->setEnabled(true);
     }
+    curDir = fileName;
+    int ix = curDir.count() - 1;
+    while (!curDir.endsWith('/'))
+    {
+        curDir.remove(ix, 1);
+        --ix;
+    }
+    settings->setValue("directory", curDir);
 }
 
 void GpsPlot::processFile(const QString & inFile)   // Create XmlStreamReader and
@@ -313,5 +323,6 @@ void GpsPlot::writeFile()   // Write a tab separated file with the track point d
 
 void GpsPlot::doClose()
 {
+    settings->sync();
     this->close();
 }
