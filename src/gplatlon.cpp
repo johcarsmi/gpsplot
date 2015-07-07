@@ -74,7 +74,7 @@ void GpLatLon::fireOffRequest(double &inLat, double &inLon, int &inZoom, int &in
         wLoad = new GpLoading(this);
         wLoad->move(this->x() + 300, this->y() + 300);
         wLoad->raise();
-/        wLoad->show();
+        wLoad->show();
     }
     QUrl bgUrl(tr("https://maps.googleapis.com/maps/api/staticmap?center=%1,%2&zoom=%3&size=%4x%5&maptype=%6&style=lightness:20")\
                .arg(inLat).arg(inLon).arg(inZoom).arg(inPw).arg(inPh).arg(inType));
