@@ -20,7 +20,8 @@ SOURCES  += src/main.cpp\
     src/plotdata.cpp \
     src/filedownloader.cpp \
     src/gplatlon.cpp \
-    src/gpmapplot.cpp
+    src/gpmapplot.cpp \
+    src/gploading.cpp
 
 HEADERS  += hdr/gpsplot.h \
     hdr/gpgraph.h \
@@ -28,11 +29,13 @@ HEADERS  += hdr/gpsplot.h \
     hdr/latlon.h \
     hdr/filedownloader.h \
     hdr/gplatlon.h \
-    hdr/gpmapplot.h
+    hdr/gpmapplot.h \
+    hdr/gploading.h
 
 FORMS    += frm/gpsplot.ui \
     frm/gpgraph.ui \
-    frm/gplatlon.ui
+    frm/gplatlon.ui \
+    frm/gploading.ui
 
 LIBS     += -L/usr/lib64 -lqwt
 

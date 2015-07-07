@@ -151,6 +151,7 @@ void GpsPlot::process_trkseg(QXmlStreamReader & inXml)
         elapsedTime = stTime.secsTo(qdt);   // When get here all points have been processed.
     }
     calcDst();
+    calcSpeed();
 }
 
 void GpsPlot::calcDst()
@@ -162,7 +163,6 @@ void GpsPlot::calcDst()
         cum += distance(lat[ix -1],lon[ix-1],lat[ix],lon[ix],'K');
         dst.append(cum);
     }
-    calcSpeed();
 }
 
 void GpsPlot::calcSpeed()   // Taking each reading 120 seconds apart.
@@ -300,8 +300,8 @@ void GpsPlot::doPlot()
     // Plot requested Graph
     GpGraph *gg = new GpGraph(this);
     gg->ggAddData(pData);
-    gg->ggLayout();
     gg->exec();
+    gg->ggLayout();
     delete gg;
 
 }

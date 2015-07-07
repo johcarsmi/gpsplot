@@ -24,6 +24,7 @@ GpLatLon::GpLatLon(QWidget *parent) :
     ui->endIco->setPalette(iPalE);
     bgType = "satellite";                   // Set default view and track colour.
     trkCol = Qt::cyan;
+    wLoad = 0;
 }
 
 GpLatLon::~GpLatLon()
@@ -67,6 +68,14 @@ void GpLatLon::ggLayout()   //
 void GpLatLon::fireOffRequest(double &inLat, double &inLon, int &inZoom, int &inPw, int &inPh, QString &inType)
 {
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+    if (wLoad == 0)
+    {
+        //qDebug() << this->x() << this->y();
+        wLoad = new GpLoading(this);
+        wLoad->move(this->x() + 300, this->y() + 300);
+        wLoad->raise();
+/        wLoad->show();
+    }
     QUrl bgUrl(tr("https://maps.googleapis.com/maps/api/staticmap?center=%1,%2&zoom=%3&size=%4x%5&maptype=%6&style=lightness:20")\
                .arg(inLat).arg(inLon).arg(inZoom).arg(inPw).arg(inPh).arg(inType));
     bgImgData = new FileDownloader(bgUrl, this);
@@ -78,6 +87,8 @@ void GpLatLon::loadBG()  // When the download is complete paint the plot area wi
     bgImage.loadFromData(bgImgData->downloadedData());
     this->repaint();    // Also causes repaint of the subordinate GpMapPlot.
     QApplication::restoreOverrideCursor();
+    delete wLoad;
+    wLoad = 0;
 }
 
 void GpLatLon::doResize()
@@ -128,7 +139,7 @@ void GpLatLon::calcLinePoints(edges &inLim, QVector<QPoint> *ptrPtVec) // Conver
 
 void GpLatLon::doMap()  // Plot against Google Maps background using a magenta pen.
 {
-    if (ui->rbMap->isChecked())
+    if ( (ui->rbMap->isChecked()) && (bgType != "map"))
     {
         bgType = "map";
         trkCol = Qt::magenta;
@@ -138,7 +149,7 @@ void GpLatLon::doMap()  // Plot against Google Maps background using a magenta p
 
 void GpLatLon::doSat()  // Plot against Google Earth background using a cyan pen.
 {
-    if (ui->rbSat->isChecked())
+    if ((ui->rbSat->isChecked()) && (bgType != "satellite"))
     {
         bgType = "satellite";
         trkCol = Qt::cyan;

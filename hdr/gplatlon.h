@@ -5,6 +5,7 @@
 
 #include <hdr/plotdata.h>
 #include <hdr/filedownloader.h>
+#include <hdr/gploading.h>
 
 namespace Ui {
 class GpLatLon;
@@ -45,8 +46,9 @@ private:
     double _lat;    // Latitude of centre of map
     double _lon;    // Longitude of centre of map
     int _zoom;      // Zoom level of map
-    int pwH;    // Plot window height
-    int pwW;    // Plot window width
+    int pwH;        // Plot window height
+    int pwW;        // Plot window width
+    GpLoading *wLoad;
 
     void doResize();
     edges calcLimits(double & cLat, double & cLon, int iZoom, int iHgt, int iWdth);
