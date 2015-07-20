@@ -25,6 +25,7 @@ void GpMapPlot::paintEvent(QPaintEvent *event)
     // Draw the track
     paint.setPen(trkPen);
     paint.drawLines(*owner->trkPlot);
+    doArrows(&paint);
     // Draw the end point offset 1px right.
     trkPen.setColor(Qt::blue);
     paint.setPen(trkPen);
@@ -38,4 +39,13 @@ void GpMapPlot::paintEvent(QPaintEvent *event)
     paint.setBrush(trkBr);
     paint.drawEllipse(owner->trkPlot->at(0).x() - 1, owner->trkPlot->at(0).y(), 3, 3);
     QWidget::paintEvent(event);
+}
+
+void GpMapPlot::doArrows(QPainter * inPaint)
+{
+    for (int ix =0; ix < owner->arrD->count(); ++ix)
+    {
+        inPaint->drawLine(owner->arrD->trkPt.at(ix), owner->arrD->lPt.at(ix));
+        inPaint->drawLine(owner->arrD->trkPt.at(ix), owner->arrD->rPt.at(ix));
+    }
 }

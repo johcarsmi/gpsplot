@@ -5,6 +5,8 @@
 
 #include <math.h>
 
+#include "hdr/latlon.h"
+
 
 GpLatLon::GpLatLon(QWidget *parent) :
     QDialog(parent),
@@ -25,6 +27,7 @@ GpLatLon::GpLatLon(QWidget *parent) :
     bgType = "satellite";                   // Set default view and track colour.
     trkCol = Qt::cyan;
     wLoad = 0;
+    arrD = new ArrowData;
 }
 
 GpLatLon::~GpLatLon()
@@ -63,13 +66,14 @@ void GpLatLon::ggLayout()   //
     calcLinePoints(lims, trkPlot);
     // Fire off map request.
     fireOffRequest(_lat, _lon, _zoom, pwW, pwH, bgType);
+    calcArrowPoints(ggData, arrD, lims);
 }
 
 void GpLatLon::fireOffRequest(double &inLat, double &inLon, int &inZoom, int &inPw, int &inPh, QString &inType)
 {
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     if (wLoad == 0)
-    {
+    {   // Pop up a loading message.
         //qDebug() << this->x() << this->y();
         wLoad = new GpLoading(this);
         wLoad->move(this->x() + 300, this->y() + 300);
@@ -154,5 +158,61 @@ void GpLatLon::doSat()  // Plot against Google Earth background using a cyan pen
         bgType = "satellite";
         trkCol = Qt::cyan;
         fireOffRequest(_lat, _lon, _zoom, pwW, pwH, bgType);
+    }
+}
+
+void GpLatLon::calcArrowPoints(PlotData *inPlot, ArrowData *outArr, edges &inLim)
+{
+    int stepsToAvg = 2;     // The number of points before and after the selected point to use to get track direction.
+    int arrSteps = 100;     // The spacing of arrows along the track.
+    QPointF headPt;
+    QPointF fPt;
+    QPointF bPt;
+    QPoint lPt = QPoint(0, 0);
+    QPoint rPt = QPoint(0, 0);
+    double dirctn = 0.0;
+    // Set up array of arrow head points and adjacent points for calculation direction
+    for (int ix = (arrSteps / 2);
+         (ix < (inPlot->xData.count() - stepsToAvg - (arrSteps / 2)));
+         ix += arrSteps)
+    {
+        headPt.setX(inPlot->xData[ix]);
+        headPt.setY(inPlot->yData[ix]);
+        bPt.setX(inPlot->xData[ix - stepsToAvg]);
+        bPt.setY(inPlot->yData[ix - stepsToAvg]);
+        fPt.setX(inPlot->xData[ix + stepsToAvg]);
+        fPt.setY(inPlot->yData[ix + stepsToAvg]);
+        outArr->appendRow(headPt, bPt, fPt, dirctn, trkPlot->at(ix), lPt, rPt);
+    }
+    // Update array with direction information.
+    for (int ix = 0; ix < outArr->count(); ++ix)
+    {
+        outArr->dirctn[ix] = angleFromCoordinates(outArr->headB[ix].y(), outArr->headB[ix].x(),
+                                                  outArr->headF[ix].y(), outArr->headF[ix].x());
+    }
+    // Calculate end points of arrow lines.
+    for (int ix = 0; ix < outArr->count(); ++ix)
+    {
+        // Calculate one set of arrow points.
+        double aLen = 0.0012;     // Length of arrow line in degrees.
+        double arrAngle = 30.0;     // Angle of arrow line to track.
+        double hLat = inLim.iMaxLat - inLim.iMinLat;
+        double wLon = inLim.iMaxLon - inLim.iMinLon;
+        double eLon, eLat, eBrg;
+        // Calculate arrow points in lat/lon and  Convert to pixels.
+        // 'Left' arrow arm.
+        eBrg = outArr->dirctn.at(ix) - 180.0 + arrAngle;
+        eBrg = deg2rad(fmod((eBrg + 360.0) , 360.0));
+        eLon = outArr->head.at(ix).x() + (aLen * sin(eBrg));
+        eLat = outArr->head.at(ix).y() + (aLen * cos(eBrg));
+        arrD->lPt[ix].setX(pwW * (eLon - inLim.iMinLon) / wLon);
+        arrD->lPt[ix].setY(pwH * (inLim.iMaxLat - eLat) / hLat);
+        // 'Right' arrow arm.
+        eBrg = outArr->dirctn.at(ix) - 180.0 - arrAngle;
+        eBrg = deg2rad(fmod((eBrg + 360) , 360.0));
+        eLon = outArr->head.at(ix).x() + (aLen * sin(eBrg));
+        eLat = outArr->head.at(ix).y() + (aLen * cos(eBrg));
+        arrD->rPt[ix].setX(pwW * (eLon - inLim.iMinLon) / wLon);
+        arrD->rPt[ix].setY(pwH * (inLim.iMaxLat - eLat) / hLat);
     }
 }

@@ -34,6 +34,7 @@ public:
     QImage bgImage;
     QVector<QPoint> *trkPlot;   // For track in pixel coordinates.
     QColor trkCol;
+    ArrowData *arrD;
 
 private:
     Ui::GpLatLon *ui;
@@ -54,6 +55,7 @@ private:
     edges calcLimits(double & cLat, double & cLon, int iZoom, int iHgt, int iWdth);
     void calcLinePoints(edges&, QVector<QPoint>*);
     void fireOffRequest(double&, double&, int&, int&, int&, QString&);
+    void calcArrowPoints(PlotData *, ArrowData *, edges&);
 
 private slots:
     void doClose();

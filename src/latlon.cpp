@@ -65,19 +65,25 @@ double distance(double lat1, double lon1, double lat2, double lon2, char unit) {
 }
 
 
-/* This bit lifted from Stack Overflow and replaced % with fmod(). */
+/* This bit lifted from Stack Overflow and replaced % with fmod().   /
+/  But it doesn't say that the input should be in radians.           /
+/  so conversion added to allow input in degrees                    */
 double angleFromCoordinates(double lat1, double long1, double lat2, double long2)
 {
-    double dLon = (long2 - long1);
+    double lt1 = deg2rad(lat1);
+    double lg1 = deg2rad(long1);
+    double lt2 = deg2rad(lat2);
+    double lg2 = deg2rad(long2);
 
-    double y = sin(dLon) * cos(lat2);
-    double x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+    double dLon = (lg2 - lg1);
+
+    double y = sin(dLon) * cos(lt2);
+    double x = cos(lt1) * sin(lt2) - sin(lt1) * cos(lt2) * cos(dLon);
 
     double brng = atan2(y, x);
 
     brng = rad2deg(brng);
     brng = fmod((brng + 360) , 360.0);
-    brng = 360 - brng;
 
     return brng;
 }

@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QVector>
+#include <QPointF>
 
 class PlotData
 {
@@ -23,6 +24,22 @@ public:
     double yLo;
     double yHi;
     bool latlon;
+};
+
+class ArrowData
+{
+public:
+    ArrowData();
+    void appendRow(QPointF, QPointF, QPointF, double, QPoint, QPoint, QPoint);
+    int count();
+
+    QVector <QPointF> head;
+    QVector <QPointF> headF;
+    QVector <QPointF> headB;
+    QVector <double> dirctn;
+    QVector <QPoint> trkPt;
+    QVector <QPoint> lPt;
+    QVector <QPoint> rPt;
 };
 
 #endif // PLOTDATA_H

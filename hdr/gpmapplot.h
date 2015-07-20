@@ -17,6 +17,7 @@ protected:
 
 private:
     GpLatLon *owner;
+    void doArrows(QPainter*);
 };
 
 #endif // GPMAPPLOT_H
