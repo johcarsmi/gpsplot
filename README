@@ -1,5 +1,5 @@
 This is a small project which I use to plot data from a Garmin 
-Oregon. 
+Oregon 450.
 
 It takes a .gpx file and imports it and then allows the choice
 of graphs that can be obtained from the data.

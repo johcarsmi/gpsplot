@@ -300,8 +300,8 @@ void GpsPlot::doPlot()
     // Plot requested Graph
     GpGraph *gg = new GpGraph(this);
     gg->ggAddData(pData);
-    gg->exec();
     gg->ggLayout();
+    gg->exec();
     delete gg;
 
 }

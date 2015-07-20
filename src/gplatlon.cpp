@@ -64,9 +64,9 @@ void GpLatLon::ggLayout()   //
     lims = calcLimits(_lat, _lon, _zoom, pwW, pwH);
     // Convert lat/lon positions into pixel points for plotting track.
     calcLinePoints(lims, trkPlot);
+    calcArrowPoints(ggData, arrD, lims);
     // Fire off map request.
     fireOffRequest(_lat, _lon, _zoom, pwW, pwH, bgType);
-    calcArrowPoints(ggData, arrD, lims);
 }
 
 void GpLatLon::fireOffRequest(double &inLat, double &inLon, int &inZoom, int &inPw, int &inPh, QString &inType)
@@ -86,7 +86,7 @@ void GpLatLon::fireOffRequest(double &inLat, double &inLon, int &inZoom, int &in
     connect(bgImgData, SIGNAL(downloaded()), this, SLOT (loadBG()));
 }
 
-void GpLatLon::loadBG()  // When the download is complete paint the plot area with a Google map.
+void GpLatLon::loadBG()  // When the download is complete, paint the plot area with a Google map.
 {
     bgImage.loadFromData(bgImgData->downloadedData());
     this->repaint();    // Also causes repaint of the subordinate GpMapPlot.
@@ -163,17 +163,17 @@ void GpLatLon::doSat()  // Plot against Google Earth background using a cyan pen
 
 void GpLatLon::calcArrowPoints(PlotData *inPlot, ArrowData *outArr, edges &inLim)
 {
-    int stepsToAvg = 2;     // The number of points before and after the selected point to use to get track direction.
+    int stepsToAvg = 10;     // The number of points before and after the selected point to use to get track direction.
     int arrSteps = 100;     // The spacing of arrows along the track.
-    QPointF headPt;
-    QPointF fPt;
-    QPointF bPt;
-    QPoint lPt = QPoint(0, 0);
-    QPoint rPt = QPoint(0, 0);
+    QPointF headPt;         // The track point at the head of the arrow.
+    QPointF fPt;            // The track point in front of the head point use for direction determination.
+    QPointF bPt;            // The track point behind the head point use for direction determination.
+    QPoint lPt = QPoint(0, 0);      // What will be the end of the left arrow line.
+    QPoint rPt = QPoint(0, 0);      // What will be the end of the right arrow line.
     double dirctn = 0.0;
     // Set up array of arrow head points and adjacent points for calculation direction
     for (int ix = (arrSteps / 2);
-         (ix < (inPlot->xData.count() - stepsToAvg - (arrSteps / 2)));
+         (ix < (inPlot->xData.count() - stepsToAvg - (arrSteps / 2)));  // Make sure that all points will be within vector bounds.
          ix += arrSteps)
     {
         headPt.setX(inPlot->xData[ix]);
@@ -201,17 +201,17 @@ void GpLatLon::calcArrowPoints(PlotData *inPlot, ArrowData *outArr, edges &inLim
         double eLon, eLat, eBrg;
         // Calculate arrow points in lat/lon and  Convert to pixels.
         // 'Left' arrow arm.
-        eBrg = outArr->dirctn.at(ix) - 180.0 + arrAngle;
+        eBrg = outArr->dirctn[ix] - 180.0 - arrAngle;
         eBrg = deg2rad(fmod((eBrg + 360.0) , 360.0));
-        eLon = outArr->head.at(ix).x() + (aLen * sin(eBrg));
-        eLat = outArr->head.at(ix).y() + (aLen * cos(eBrg));
+        eLon = outArr->head[ix].x() + (aLen * sin(eBrg));
+        eLat = outArr->head[ix].y() + (aLen * cos(eBrg));
         arrD->lPt[ix].setX(pwW * (eLon - inLim.iMinLon) / wLon);
         arrD->lPt[ix].setY(pwH * (inLim.iMaxLat - eLat) / hLat);
         // 'Right' arrow arm.
-        eBrg = outArr->dirctn.at(ix) - 180.0 - arrAngle;
-        eBrg = deg2rad(fmod((eBrg + 360) , 360.0));
-        eLon = outArr->head.at(ix).x() + (aLen * sin(eBrg));
-        eLat = outArr->head.at(ix).y() + (aLen * cos(eBrg));
+        eBrg = outArr->dirctn[ix] - 180.0 + arrAngle;
+        eBrg = deg2rad(fmod((eBrg + 360.0) , 360.0));
+        eLon = outArr->head[ix].x() + (aLen * sin(eBrg));
+        eLat = outArr->head[ix].y() + (aLen * cos(eBrg));
         arrD->rPt[ix].setX(pwW * (eLon - inLim.iMinLon) / wLon);
         arrD->rPt[ix].setY(pwH * (inLim.iMaxLat - eLat) / hLat);
     }
