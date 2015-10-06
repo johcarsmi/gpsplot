@@ -25,7 +25,7 @@ void GpMapPlot::paintEvent(QPaintEvent *event)
     // Draw the track
     paint.setPen(trkPen);
     paint.drawLines(*owner->trkPlot);
-    doArrows(&paint);
+//  doArrows(&paint);                                                        // Temporarily disabled.
     // Draw the end point offset 1px right.
     trkPen.setColor(Qt::blue);
     paint.setPen(trkPen);

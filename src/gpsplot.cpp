@@ -37,7 +37,6 @@ void GpsPlot::doOpen()  // Prompt the use with a FileOpen dialog and process the
     {
         processFile(fileName);
         if (!(tim.isEmpty())) ui->pbPlot->setEnabled(true);
-    }
     curDir = fileName;
     int ix = curDir.count() - 1;
     while (!curDir.endsWith('/'))
@@ -46,6 +45,7 @@ void GpsPlot::doOpen()  // Prompt the use with a FileOpen dialog and process the
         --ix;
     }
     settings->setValue("directory", curDir);
+    }
 }
 
 void GpsPlot::processFile(const QString & inFile)   // Create XmlStreamReader and

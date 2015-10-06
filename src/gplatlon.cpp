@@ -58,10 +58,17 @@ void GpLatLon::ggLayout()   //
     // Calculate centre of plot.
     _lat = ((ggData->yLo + ggData->yHi) / 2);
     _lon = ((ggData->xLo + ggData->xHi) / 2);
-    // Set zoom level for call to Google. 13 is an arbitary number that seems to work!
-    _zoom = 13;
-    // Calculate the limits of the downloaded map - used for plotting track later.
-    lims = calcLimits(_lat, _lon, _zoom, pwW, pwH);
+    // Set initial zoom level for call to Google.
+    _zoom = 17;
+    // Calculate the limits of the downloaded map - used for plotting track later
+    // and check zoom level, adjusting if plot is outside map.
+    do
+    {
+        _zoom--;    // Need to have before calculation else wrong value at end of loop.
+        lims = calcLimits(_lat, _lon, _zoom, pwW, pwH);
+    }
+    while (lims.iMinLat > ggData->yLo || lims.iMaxLat < ggData->yHi ||
+           lims.iMinLon > ggData->xLo || lims.iMaxLon < ggData->xHi);
     // Convert lat/lon positions into pixel points for plotting track.
     calcLinePoints(lims, trkPlot);
     calcArrowPoints(ggData, arrD, lims);
@@ -163,7 +170,7 @@ void GpLatLon::doSat()  // Plot against Google Earth background using a cyan pen
 
 void GpLatLon::calcArrowPoints(PlotData *inPlot, ArrowData *outArr, edges &inLim)
 {
-    int stepsToAvg = 10;     // The number of points before and after the selected point to use to get track direction.
+    int stepsToAvg = 3;     // The number of points before and after the selected point to use to get track direction.
     int arrSteps = 100;     // The spacing of arrows along the track.
     QPointF headPt;         // The track point at the head of the arrow.
     QPointF fPt;            // The track point in front of the head point use for direction determination.
