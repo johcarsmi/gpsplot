@@ -56,7 +56,7 @@ private:
     const QString stgsFile = ".gpsplot.settings";
     QString curDir;
 
-    void processFile(const QString &);
+    bool processFile(const QString &);
     void process_trk(QXmlStreamReader &);
     void process_trkseg(QXmlStreamReader &);
     void createGraph();

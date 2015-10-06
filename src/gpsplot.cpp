@@ -35,7 +35,7 @@ void GpsPlot::doOpen()  // Prompt the use with a FileOpen dialog and process the
     fileName = QFileDialog::getOpenFileName(this, tr("Open track file"), curDir, tr("GPS track files (*.gpx)"));
     if (fileName != "")
     {
-        processFile(fileName);
+        if (!processFile(fileName)) return;
         if (!(tim.isEmpty())) ui->pbPlot->setEnabled(true);
     curDir = fileName;
     int ix = curDir.count() - 1;
@@ -48,30 +48,43 @@ void GpsPlot::doOpen()  // Prompt the use with a FileOpen dialog and process the
     }
 }
 
-void GpsPlot::processFile(const QString & inFile)   // Create XmlStreamReader and
+bool GpsPlot::processFile(const QString & inFile)   // Create XmlStreamReader and
 {
+    bool trkFound = false;
     QFile gpxFile(inFile);
     if (!gpxFile.open(QFile::ReadOnly | QFile::Text ) )
     {
         QMessageBox::warning(this, tr("Open File error"), tr("Error: %1").arg(gpxFile.errorString()));
-        return;
+        return trkFound;
     }
     xRead.setDevice(&gpxFile);
     if (xRead.readNextStartElement())               // Check this is a gpx file.
         {
             if (xRead.name() != tr("gpx")) {
+                QMessageBox::warning(this, tr("Error"), tr("Not a gpx file!"));
                 xRead.raiseError(tr("Not a gpx file"));
-                return; }
+                gpxFile.close();
+                return trkFound; }
         }
         while (xRead.readNextStartElement())        // Skip unwanted elements stopping on the 'trk' element.
         {
 //          qDebug() << xRead.name();               // DEBUG
-            if (xRead.name() == tr("trk")) break;
+            if (xRead.name() == tr("trk"))
+            {
+                trkFound = true;
+                break;
+            }
             xRead.skipCurrentElement();
         }
 //        qDebug() << xRead.name();                   // DEBUG
-        process_trk(xRead);
+        if (trkFound) process_trk(xRead);
+        else
+        {
+            QMessageBox::warning(this, tr("Error"), tr("Not a gpx track file!"));
+            xRead.raiseError(tr("Not a gpx track file"));
+        }
         gpxFile.close();
+        return trkFound;
  }
 
 void GpsPlot::process_trk(QXmlStreamReader & inXml) // Process the 'trk' element data and process track segment elements.
