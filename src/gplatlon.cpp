@@ -26,6 +26,7 @@ GpLatLon::GpLatLon(QWidget *parent) :
     ui->endIco->setPalette(iPalE);
     bgType = "satellite";                   // Set default view and track colour.
     trkCol = Qt::cyan;
+    arrCol = Qt::yellow;
     wLoad = 0;
     arrD = new ArrowData;
 }
@@ -58,20 +59,19 @@ void GpLatLon::ggLayout()   //
     // Calculate centre of plot.
     _lat = ((ggData->yLo + ggData->yHi) / 2);
     _lon = ((ggData->xLo + ggData->xHi) / 2);
-    // Set initial zoom level for call to Google.
+    // Set zoom level for call to Google. 17 is an arbitary starting point.
     _zoom = 17;
-    // Calculate the limits of the downloaded map - used for plotting track later
-    // and check zoom level, adjusting if plot is outside map.
-    do
+    do          // Keep decreasing the scale until the plot fits in the map.
     {
-        _zoom--;    // Need to have before calculation else wrong value at end of loop.
+        _zoom--;
+        // Calculate the limits of the downloaded map - used for plotting track later.
         lims = calcLimits(_lat, _lon, _zoom, pwW, pwH);
     }
-    while (lims.iMinLat > ggData->yLo || lims.iMaxLat < ggData->yHi ||
-           lims.iMinLon > ggData->xLo || lims.iMaxLon < ggData->xHi);
+    while (lims.iMaxLat < ggData->yHi || lims.iMinLat > ggData->yLo
+           || lims.iMaxLon < ggData->xHi || lims.iMinLon > ggData->xLo);
     // Convert lat/lon positions into pixel points for plotting track.
     calcLinePoints(lims, trkPlot);
-    calcArrowPoints(ggData, arrD, lims);
+    calcArrowPoints(ggData, arrD);
     // Fire off map request.
     fireOffRequest(_lat, _lon, _zoom, pwW, pwH, bgType);
 }
@@ -154,6 +154,7 @@ void GpLatLon::doMap()  // Plot against Google Maps background using a magenta p
     {
         bgType = "map";
         trkCol = Qt::magenta;
+        arrCol = Qt::blue;
         fireOffRequest(_lat, _lon, _zoom, pwW, pwH, bgType);
     }
 }
@@ -164,13 +165,14 @@ void GpLatLon::doSat()  // Plot against Google Earth background using a cyan pen
     {
         bgType = "satellite";
         trkCol = Qt::cyan;
+        arrCol = Qt::yellow;
         fireOffRequest(_lat, _lon, _zoom, pwW, pwH, bgType);
     }
 }
 
-void GpLatLon::calcArrowPoints(PlotData *inPlot, ArrowData *outArr, edges &inLim)
+void GpLatLon::calcArrowPoints(PlotData *inPlot, ArrowData *outArr)
 {
-    int stepsToAvg = 3;     // The number of points before and after the selected point to use to get track direction.
+    int stepsToAvg = 9;     // The number of points before and after the selected point to use to get track direction.
     int arrSteps = 100;     // The spacing of arrows along the track.
     QPointF headPt;         // The track point at the head of the arrow.
     QPointF fPt;            // The track point in front of the head point use for direction determination.
@@ -198,28 +200,22 @@ void GpLatLon::calcArrowPoints(PlotData *inPlot, ArrowData *outArr, edges &inLim
                                                   outArr->headF[ix].y(), outArr->headF[ix].x());
     }
     // Calculate end points of arrow lines.
+    double arrLen = 9;          // Length of arrow line in pixels.
+    double arrAngle = 30.0;     // Angle of arrow line to track.
+    double eBrg;
     for (int ix = 0; ix < outArr->count(); ++ix)
     {
         // Calculate one set of arrow points.
-        double aLen = 0.0012;     // Length of arrow line in degrees.
-        double arrAngle = 30.0;     // Angle of arrow line to track.
-        double hLat = inLim.iMaxLat - inLim.iMinLat;
-        double wLon = inLim.iMaxLon - inLim.iMinLon;
-        double eLon, eLat, eBrg;
         // Calculate arrow points in lat/lon and  Convert to pixels.
         // 'Left' arrow arm.
-        eBrg = outArr->dirctn[ix] - 180.0 - arrAngle;
-        eBrg = deg2rad(fmod((eBrg + 360.0) , 360.0));
-        eLon = outArr->head[ix].x() + (aLen * sin(eBrg));
-        eLat = outArr->head[ix].y() + (aLen * cos(eBrg));
-        arrD->lPt[ix].setX(pwW * (eLon - inLim.iMinLon) / wLon);
-        arrD->lPt[ix].setY(pwH * (inLim.iMaxLat - eLat) / hLat);
+        eBrg = outArr->dirctn[ix] - 180.0 - arrAngle;  // degrees
+        eBrg = deg2rad(fmod((eBrg + 360.0) , 360.0));  // radians
+        arrD->lPt[ix].setX(arrD->trkPt[ix].x() + (arrLen * sin(eBrg)));
+        arrD->lPt[ix].setY(arrD->trkPt[ix].y() - (arrLen * cos(eBrg)));
         // 'Right' arrow arm.
         eBrg = outArr->dirctn[ix] - 180.0 + arrAngle;
         eBrg = deg2rad(fmod((eBrg + 360.0) , 360.0));
-        eLon = outArr->head[ix].x() + (aLen * sin(eBrg));
-        eLat = outArr->head[ix].y() + (aLen * cos(eBrg));
-        arrD->rPt[ix].setX(pwW * (eLon - inLim.iMinLon) / wLon);
-        arrD->rPt[ix].setY(pwH * (inLim.iMaxLat - eLat) / hLat);
+        arrD->rPt[ix].setX(arrD->trkPt[ix].x() + (arrLen * sin(eBrg)));
+        arrD->rPt[ix].setY(arrD->trkPt[ix].y() - (arrLen * cos(eBrg)));
     }
 }

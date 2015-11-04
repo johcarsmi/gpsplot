@@ -278,6 +278,26 @@
        </widget>
       </item>
       <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pbOpen">
+        <property name="text">
+         <string>&amp;Open File</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="hsPushButtons">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -415,6 +435,22 @@
     <hint type="destinationlabel">
      <x>402</x>
      <y>412</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pbOpen</sender>
+   <signal>clicked()</signal>
+   <receiver>GpsPlot</receiver>
+   <slot>doOpen()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>258</x>
+     <y>396</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>331</x>
+     <y>360</y>
     </hint>
    </hints>
   </connection>
