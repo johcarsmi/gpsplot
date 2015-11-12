@@ -163,7 +163,10 @@
        <item>
         <widget class="QLabel" name="lblZin">
          <property name="text">
-          <string>Zoom In</string>
+          <string>Zoom &amp;In</string>
+         </property>
+         <property name="buddy">
+          <cstring>pbZin</cstring>
          </property>
         </widget>
        </item>
@@ -203,7 +206,10 @@
        <item>
         <widget class="QLabel" name="lblZout">
          <property name="text">
-          <string>Zoom Out</string>
+          <string>Zoom &amp;Out</string>
+         </property>
+         <property name="buddy">
+          <cstring>pbZout</cstring>
          </property>
         </widget>
        </item>
