@@ -41,3 +41,14 @@ int ArrowData::count()
 {
     return head.count();
 }
+
+void ArrowData::clear()
+{
+    head.clear();
+    headB.clear();
+    headF.clear();
+    dirctn.clear();
+    trkPt.clear();
+    lPt.clear();
+    rPt.clear();
+}

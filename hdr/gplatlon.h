@@ -61,8 +61,17 @@ private:
 private slots:
     void doClose();
     void loadBG();
+    void drawPlot();
     void doMap();
     void doSat();
+    void doZin();
+    void doZout();
+    void calculateLimits();
+    void doPup();
+    void doPdown();
+    void doPleft();
+    void doPright();
+    void doPctr();
 
 };
 

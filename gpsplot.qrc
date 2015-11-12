@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>misc/down.png</file>
+        <file>misc/left.png</file>
+        <file>misc/right.png</file>
+        <file>misc/up.png</file>
+        <file>misc/in.png</file>
+        <file>misc/out.png</file>
+        <file>misc/centre.png</file>
+    </qresource>
+</RCC>

@@ -57,23 +57,18 @@ void GpLatLon::ggLayout()   //
     ui->dspTrkName->setText(ggData->trkName);
     ui->dspTrkDate->setText(ggData->trkDate);
     // Calculate centre of plot.
-    _lat = ((ggData->yLo + ggData->yHi) / 2);
-    _lon = ((ggData->xLo + ggData->xHi) / 2);
+    _lat = ((ggData->yLo + ggData->yHi) / 2.0);
+    _lon = ((ggData->xLo + ggData->xHi) / 2.0);
     // Set zoom level for call to Google. 17 is an arbitary starting point.
-    _zoom = 17;
+    _zoom = 19;
     do          // Keep decreasing the scale until the plot fits in the map.
     {
         _zoom--;
-        // Calculate the limits of the downloaded map - used for plotting track later.
-        lims = calcLimits(_lat, _lon, _zoom, pwW, pwH);
+        calculateLimits();
     }
     while (lims.iMaxLat < ggData->yHi || lims.iMinLat > ggData->yLo
            || lims.iMaxLon < ggData->xHi || lims.iMinLon > ggData->xLo);
-    // Convert lat/lon positions into pixel points for plotting track.
-    calcLinePoints(lims, trkPlot);
-    calcArrowPoints(ggData, arrD);
-    // Fire off map request.
-    fireOffRequest(_lat, _lon, _zoom, pwW, pwH, bgType);
+    drawPlot();
 }
 
 void GpLatLon::fireOffRequest(double &inLat, double &inLon, int &inZoom, int &inPw, int &inPh, QString &inType)
@@ -135,6 +130,7 @@ edges GpLatLon::calcLimits(double &cLat, double &cLon, int iZoom, int iHgt, int 
 
 void GpLatLon::calcLinePoints(edges &inLim, QVector<QPoint> *ptrPtVec) // Convert lat/lon to the relevant pixel coordinates.
 {
+    ptrPtVec->clear();
     QPoint trkPt;
     double hLat = inLim.iMaxLat - inLim.iMinLat;
     double wLon = inLim.iMaxLon - inLim.iMinLon;
@@ -172,6 +168,7 @@ void GpLatLon::doSat()  // Plot against Google Earth background using a cyan pen
 
 void GpLatLon::calcArrowPoints(PlotData *inPlot, ArrowData *outArr)
 {
+    outArr->clear();
     int stepsToAvg = 9;     // The number of points before and after the selected point to use to get track direction.
     int arrSteps = 100;     // The spacing of arrows along the track.
     QPointF headPt;         // The track point at the head of the arrow.
@@ -219,3 +216,56 @@ void GpLatLon::calcArrowPoints(PlotData *inPlot, ArrowData *outArr)
         arrD->rPt[ix].setY(arrD->trkPt[ix].y() - (arrLen * cos(eBrg)));
     }
 }
+
+void GpLatLon::calculateLimits()
+{
+    // Calculate the limits of the downloaded map - used for plotting track later.
+    lims = calcLimits(_lat, _lon, _zoom, pwW, pwH);
+}
+
+void GpLatLon::drawPlot()
+{
+    // Convert lat/lon positions into pixel points for plotting track.
+    calcLinePoints(lims, trkPlot);
+    calcArrowPoints(ggData, arrD);
+    // Fire off map request.
+    fireOffRequest(_lat, _lon, _zoom, pwW, pwH, bgType);
+}
+
+void GpLatLon::doZin()
+{
+    _zoom++;
+    calculateLimits();
+    drawPlot();
+}
+
+void GpLatLon::doZout()
+{
+    _zoom--;
+    calculateLimits();
+    drawPlot();
+}
+
+void GpLatLon::doPup()
+{
+    return; // TODO
+}
+
+void GpLatLon::doPdown()
+{
+    return; // TODO
+}
+
+void GpLatLon::doPleft()
+{
+    return; // TODO
+}
+ void GpLatLon::doPright()
+ {
+    return; // TODO
+ }
+
+ void GpLatLon::doPctr()
+ {
+     return; // TODO
+ }

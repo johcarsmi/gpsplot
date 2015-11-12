@@ -41,3 +41,8 @@ LIBS     += -L/usr/lib64 -lqwt
 
 OTHER_FILES += \
     README
+
+RESOURCES += \
+    gpsplot.qrc
+
+DISTFILES +=

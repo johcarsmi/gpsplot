@@ -32,6 +32,7 @@ public:
     ArrowData();
     void appendRow(QPointF, QPointF, QPointF, double, QPoint, QPoint, QPoint);
     int count();
+    void clear();
 
     QVector <QPointF> head;
     QVector <QPointF> headF;
