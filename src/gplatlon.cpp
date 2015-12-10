@@ -57,8 +57,7 @@ void GpLatLon::ggLayout()   //
     ui->dspTrkName->setText(ggData->trkName);
     ui->dspTrkDate->setText(ggData->trkDate);
     // Calculate centre of plot.
-    _lat = ((ggData->yLo + ggData->yHi) / 2.0);
-    _lon = ((ggData->xLo + ggData->xHi) / 2.0);
+   calcCentrePoint();
     // Set zoom level for call to Google. 17 is an arbitary starting point.
     _zoom = 19;
     do          // Keep decreasing the scale until the plot fits in the map.
@@ -223,6 +222,13 @@ void GpLatLon::calculateLimits()
     lims = calcLimits(_lat, _lon, _zoom, pwW, pwH);
 }
 
+void GpLatLon::calcCentrePoint()
+{
+    // Calculate centre of plot.
+    _lat = ((ggData->yLo + ggData->yHi) / 2.0);
+    _lon = ((ggData->xLo + ggData->xHi) / 2.0);
+}
+
 void GpLatLon::drawPlot()
 {
     // Convert lat/lon positions into pixel points for plotting track.
@@ -248,24 +254,35 @@ void GpLatLon::doZout()
 
 void GpLatLon::doPup()
 {
-    return; // TODO
+    _lat = _lat + ((lims.iMaxLat - lims.iMinLat) / 3);
+    calculateLimits();
+    drawPlot();
 }
 
 void GpLatLon::doPdown()
 {
-    return; // TODO
+    _lat = _lat - ((lims.iMaxLat - lims.iMinLat) / 3);
+    calculateLimits();
+    drawPlot();
 }
 
 void GpLatLon::doPleft()
 {
-    return; // TODO
+    _lon = _lon - ((lims.iMaxLon - lims.iMinLon) / 3);
+    calculateLimits();
+    drawPlot();
 }
+
  void GpLatLon::doPright()
  {
-    return; // TODO
+     _lon = _lon + ((lims.iMaxLon - lims.iMinLon) / 3);
+     calculateLimits();
+     drawPlot();
  }
 
  void GpLatLon::doPctr()
  {
-     return; // TODO
+     calcCentrePoint();
+     calculateLimits();
+     drawPlot();
  }

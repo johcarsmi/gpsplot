@@ -9,3 +9,6 @@ It uses the QwtPlot object from the QWT to present the graphs.
 It is a perpetual work in progress!
 
 The filedownloader code was taken straight from the Qt documentation site.
+
+I added the track on a satellite image at a request and learnt quite a bit
+doing it.

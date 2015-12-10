@@ -57,6 +57,7 @@ private:
     void calcLinePoints(edges&, QVector<QPoint>*);
     void fireOffRequest(double&, double&, int&, int&, int&, QString&);
     void calcArrowPoints(PlotData *, ArrowData *);
+    void calcCentrePoint();
 
 private slots:
     void doClose();
