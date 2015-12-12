@@ -67,6 +67,7 @@ void GpLatLon::ggLayout()   //
     }
     while (lims.iMaxLat < ggData->yHi || lims.iMinLat > ggData->yLo
            || lims.iMaxLon < ggData->xHi || lims.iMinLon > ggData->xLo);
+    _zoomInit = _zoom;
     drawPlot();
 }
 
@@ -248,6 +249,13 @@ void GpLatLon::doZin()
 void GpLatLon::doZout()
 {
     _zoom--;
+    calculateLimits();
+    drawPlot();
+}
+
+void GpLatLon::doZreset()
+{
+    _zoom = _zoomInit;
     calculateLimits();
     drawPlot();
 }

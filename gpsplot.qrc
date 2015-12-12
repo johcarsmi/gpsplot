@@ -7,5 +7,6 @@
         <file>misc/in.png</file>
         <file>misc/out.png</file>
         <file>misc/centre.png</file>
+        <file>misc/reset.png</file>
     </qresource>
 </RCC>
