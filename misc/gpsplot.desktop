@@ -1,0 +1,21 @@
+[Desktop Entry]
+Categories=Applications;
+Comment[en_GB]=
+Comment=
+Exec=gpsplot
+GenericName[en_GB]=GPS trace plotting program
+GenericName=GPS trace plotting program
+Icon=gpsplot.png
+MimeType=
+Name[en_GB]=
+Name=GpsPlot
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+Version=1.0
+X-DBUS-ServiceName=
+X-DBUS-StartupType=none
+X-KDE-SubstituteUID=false
+X-KDE-Username=

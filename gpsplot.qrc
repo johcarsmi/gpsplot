@@ -8,5 +8,6 @@
         <file>misc/out.png</file>
         <file>misc/centre.png</file>
         <file>misc/reset.png</file>
+        <file>misc/gpsplot.png</file>
     </qresource>
 </RCC>

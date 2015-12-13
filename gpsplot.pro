@@ -8,6 +8,17 @@ QT       += core gui xml network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+target.path = /usr/local/bin
+INSTALLS += target
+
+icon.path = /usr/share/icons/hicolor/48x48/apps     # freedesktop.org standard location for icons
+icon.files = misc/gpsplot.png
+INSTALLS += icon
+
+menu.path = /usr/share/applications                 # freedesktop.org standard location for menus
+menu.files = misc/gpsplot.desktop
+INSTALLS += menu
+
 TARGET = gpsplot
 TEMPLATE = app
 INCLUDEPATH += hdr \
@@ -40,9 +51,12 @@ FORMS    += frm/gpsplot.ui \
 LIBS     += -L/usr/lib64 -lqwt
 
 OTHER_FILES += \
-    README
+    README \
+    gpsplot.png \
+    gpsplot.desktop
 
 RESOURCES += \
     gpsplot.qrc
 
-DISTFILES +=
+DISTFILES += \
+    misc/gpsplot.desktop
