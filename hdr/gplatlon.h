@@ -31,27 +31,38 @@ public:
 
     void ggAddData (PlotData *);
     void ggLayout();
+    void setPaintBG(bool);
+    void saveDragStart();
+    void passDragPos(QPoint *);
     QImage bgImage;
     QVector<QPoint> *trkPlot;   // For track in pixel coordinates.
     QColor trkCol;
     ArrowData *arrD;
     QColor arrCol;
 
+public slots:
+    void doZin();
+    void doZout();
+
 private:
     Ui::GpLatLon *ui;
     PlotData *ggData;
     FileDownloader *bgImgData;
     edges lims;
+    edges limsSaved;
     QPalette iPalS;
     QPalette iPalE;
     QString bgType;
     double _lat;    // Latitude of centre of map
     double _lon;    // Longitude of centre of map
+    double _latSaved;    // Latitude of centre of map at start of drag
+    double _lonSaved;    // Longitude of centre of map at start of drag
     int _zoom;      // Zoom level of map
     int _zoomInit;  // Initial zoom level
     int pwH;        // Plot window height
     int pwW;        // Plot window width
     GpLoading *wLoad;
+    bool doPaint;
 
     void doResize();
     edges calcLimits(double & cLat, double & cLon, int iZoom, int iHgt, int iWdth);
@@ -66,8 +77,6 @@ private slots:
     void drawPlot();
     void doMap();
     void doSat();
-    void doZin();
-    void doZout();
     void doZreset();
     void calculateLimits();
     void doPup();

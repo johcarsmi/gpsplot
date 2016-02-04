@@ -2,14 +2,17 @@
 #include "hdr/gplatlon.h"
 
 #include <QPainter>
+#include <QWheelEvent>
 
 GpMapPlot::GpMapPlot(QWidget *parent) : QWidget(parent)
 {
     owner = static_cast<GpLatLon*>(parent); // To allow access to properties of GpLatLon class.
+    nowPt = new QPoint;
 }
 
 GpMapPlot::~GpMapPlot()
 {
+    delete nowPt;
     // Leave destruction to Qt.
 }
 
@@ -20,11 +23,13 @@ void GpMapPlot::paintEvent(QPaintEvent *event)
     paint.drawImage(0, 0, owner->bgImage);
     // Set up the pen for the track.
     QPen trkPen;
+    trkPen.setStyle(Qt::SolidLine);
     trkPen.setColor(owner->trkCol);
     trkPen.setWidth(1);
-    // Draw the track
+    // Draw the track.
     paint.setPen(trkPen);
     paint.drawLines(*owner->trkPlot);
+    // Draw the arrows.
     trkPen.setColor(owner->arrCol);
     paint.setPen(trkPen);
     doArrows(&paint);
@@ -48,4 +53,41 @@ void GpMapPlot::doArrows(QPainter * inPaint)
         inPaint->drawLine(owner->arrD->trkPt.at(ix), owner->arrD->lPt.at(ix));
         inPaint->drawLine(owner->arrD->trkPt.at(ix), owner->arrD->rPt.at(ix));
     }
+}
+
+void GpMapPlot::mouseMoveEvent(QMouseEvent *event)
+{
+    int dX, dY;
+    dX = event->x() - startX;
+    dY = event->y() - startY;
+    //qDebug("GpMapPlot: dX = %d : dY = %d", dX, dY);
+    nowPt->setX(dX);
+    nowPt->setY(dY);
+    owner->passDragPos(nowPt);
+}
+
+void GpMapPlot::mousePressEvent(QMouseEvent *event)
+{
+    owner->saveDragStart();
+    owner->setPaintBG(false);
+    startX = event->x();
+    startY = event->y();
+}
+
+void GpMapPlot::mouseReleaseEvent(QMouseEvent *event)
+{
+    endX = event->x();
+    endY = event->y();
+    owner->setPaintBG(true);
+    if (startX == endX && startY == endY) return;
+    owner->passDragPos(nowPt);
+}
+
+void GpMapPlot::wheelEvent(QWheelEvent *wevent)
+{
+    int movemt = wevent->delta();
+    //qDebug("wheel move %d", movemt);
+    if (movemt > 0) owner->doZin();
+    if (movemt < 0) owner->doZout();
+    wevent->ignore();
 }

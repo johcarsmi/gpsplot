@@ -13,9 +13,9 @@ of graphs that can be obtained from the data.
 
 ### Status
 It is a perpetual work in progress! Having said that I have no immediate
-plans to add any functionality at present (December 2015).
+plans to add any functionality at present (February 2015).
 One idea I may have a go at is using the mouse to drag the plot-on-satllite 
-to pan it.
+to pan it. This was added in February 2016 with mouse wheel zoom.
 
 ### Credits
 The filedownloader code was taken straight from the Qt documentation site.

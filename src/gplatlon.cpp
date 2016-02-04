@@ -29,6 +29,7 @@ GpLatLon::GpLatLon(QWidget *parent) :
     arrCol = Qt::yellow;
     wLoad = 0;
     arrD = new ArrowData;
+    doPaint = true;
 }
 
 GpLatLon::~GpLatLon()
@@ -73,6 +74,7 @@ void GpLatLon::ggLayout()   //
 
 void GpLatLon::fireOffRequest(double &inLat, double &inLon, int &inZoom, int &inPw, int &inPh, QString &inType)
 {
+    if (!doPaint) return;
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     if (wLoad == 0)
     {   // Pop up a loading message.
@@ -293,4 +295,28 @@ void GpLatLon::doPleft()
      calcCentrePoint();
      calculateLimits();
      drawPlot();
+ }
+
+ void GpLatLon::setPaintBG(bool state)
+ {
+     doPaint = state;
+ }
+
+ void GpLatLon::saveDragStart()
+ {
+     _latSaved = _lat;
+     _lonSaved = _lon;
+     limsSaved = lims;
+ }
+
+ void GpLatLon::passDragPos(QPoint *curPt)
+ {
+    // Calculate how muuch the pixel movement means in terms of Lat and Lon.
+    // The difference in signs in the next two lines reflects the y=0 being at the top of the picture.
+    _lat = _latSaved + ((limsSaved.iMaxLat - limsSaved.iMinLat) * ((double)curPt->y() / (double)ui->gllPlot->height()) );
+    _lon = _lonSaved - ((limsSaved.iMaxLon - limsSaved.iMinLon) * ((double)curPt->x() / (double)ui->gllPlot->width()) );
+    //qDebug("GpLatLon: _lat = %f : _lon = %f", _lat, _lon);
+    calculateLimits();
+    drawPlot();
+    ui->gllPlot->repaint();
  }

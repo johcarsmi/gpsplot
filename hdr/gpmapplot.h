@@ -2,6 +2,7 @@
 #define GPMAPPLOT_H
 
 #include <QWidget>
+#include <QMouseEvent>
 
 #include "hdr/gplatlon.h"
 
@@ -14,9 +15,18 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *wevent);
 
 private:
     GpLatLon *owner;
+    int startX;
+    int startY;
+    int endX;
+    int endY;
+    QPoint *nowPt;
     void doArrows(QPainter*);
 };
 
