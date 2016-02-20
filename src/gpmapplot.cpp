@@ -64,6 +64,7 @@ void GpMapPlot::mouseMoveEvent(QMouseEvent *event)
     nowPt->setX(dX);
     nowPt->setY(dY);
     owner->passDragPos(nowPt);
+    event->accept();
 }
 
 void GpMapPlot::mousePressEvent(QMouseEvent *event)
@@ -72,6 +73,7 @@ void GpMapPlot::mousePressEvent(QMouseEvent *event)
     owner->setPaintBG(false);
     startX = event->x();
     startY = event->y();
+    event->accept();
 }
 
 void GpMapPlot::mouseReleaseEvent(QMouseEvent *event)
@@ -81,13 +83,19 @@ void GpMapPlot::mouseReleaseEvent(QMouseEvent *event)
     owner->setPaintBG(true);
     if (startX == endX && startY == endY) return;
     owner->passDragPos(nowPt);
+    event->accept();
 }
 
 void GpMapPlot::wheelEvent(QWheelEvent *wevent)
 {
     int movemt = wevent->delta();
     //qDebug("wheel move %d", movemt);
+    if (movemt == 0)
+    {
+        wevent->ignore();
+        return;
+    }
     if (movemt > 0) owner->doZin();
     if (movemt < 0) owner->doZout();
-    wevent->ignore();
+    wevent->accept();
 }
