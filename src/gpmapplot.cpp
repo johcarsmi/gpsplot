@@ -42,7 +42,7 @@ void GpMapPlot::paintEvent(QPaintEvent *event)
     // Draw the start point offset 1px left so it overlays end point marker if the two coincide.
     trkBr.setColor(Qt::red);
     paint.setBrush(trkBr);
-    paint.drawEllipse(owner->trkPlot->at(0).x() - 1, owner->trkPlot->at(0).y(), 3, 3);
+    paint.drawEllipse(owner->trkPlot->at(0).x() - 1, owner->trkPlot->at(0).y(), 5, 5);
     QWidget::paintEvent(event);
 }
 

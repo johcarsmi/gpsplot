@@ -307,7 +307,7 @@ void GpsPlot::doPlot()
     else if (ui->rbFile->isChecked())
     {
         writeFile();
-        QMessageBox::information(this, "Notification", "File written");
+        QMessageBox::information(this, "Notification", "File written to ~/track.txt");
         return;
     }
     // Plot requested Graph
@@ -321,7 +321,7 @@ void GpsPlot::doPlot()
 
 void GpsPlot::writeFile()   // Write a tab separated file with the track point data.
 {
-    QFile oFile(QDir::homePath() + QDir::separator() + "osm" + QDir::separator() + "track.txt", this);
+    QFile oFile(QDir::homePath() + QDir::separator() + "track.txt", this);
     if (!oFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
         QMessageBox::critical(this, tr("ERROR"), tr("Unable to open track.txt for writing:") + oFile.errorString());
