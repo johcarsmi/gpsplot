@@ -1,9 +1,9 @@
 #ifndef PLOTDATA_H
 #define PLOTDATA_H
 
-#include <QString>
-#include <QVector>
-#include <QPointF>
+#include <qt5/QtCore/QString>
+#include <qt5/QtCore/QVector>
+#include <qt5/QtCore/QPointF>
 
 class PlotData
 {

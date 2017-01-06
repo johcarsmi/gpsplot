@@ -1,8 +1,8 @@
 #include "hdr/gpmapplot.h"
 #include "hdr/gplatlon.h"
 
-#include <QPainter>
-#include <QWheelEvent>
+#include <qt5/QtGui/QPainter>
+#include <qt5/QtGui/QWheelEvent>
 
 GpMapPlot::GpMapPlot(QWidget *parent) : QWidget(parent)
 {

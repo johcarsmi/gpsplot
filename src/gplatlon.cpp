@@ -1,7 +1,7 @@
 #include "hdr/gplatlon.h"
 #include "ui_gplatlon.h"
 
-#include <QtDebug>
+#include <qt5/QtCore/QtDebug>
 
 #include <math.h>
 

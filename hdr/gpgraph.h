@@ -1,7 +1,7 @@
 #ifndef GPGRAPH_H
 #define GPGRAPH_H
 
-#include <QDialog>
+#include <qt5/QtWidgets/QDialog>
 
 #include <hdr/plotdata.h>
 

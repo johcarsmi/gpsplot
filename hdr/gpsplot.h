@@ -1,13 +1,13 @@
 #ifndef GPSPLOT_H
 #define GPSPLOT_H
 
-#include <QDateTime>
-#include <QFile>
-#include <QMainWindow>
-#include <QTextStream>
-#include <QVector>
-#include <QXmlStreamReader>
-#include <QSettings>
+#include <qt5/QtCore/QDateTime>
+#include <qt5/QtCore/QFile>
+#include <qt5/QtWidgets/QMainWindow>
+#include <qt5/QtCore/QTextStream>
+#include <qt5/QtCore/QVector>
+#include <qt5/QtCore/QXmlStreamReader>
+#include <qt5/QtCore/QSettings>
 
 #include "hdr/plotdata.h"
 #include "hdr/gpgraph.h"

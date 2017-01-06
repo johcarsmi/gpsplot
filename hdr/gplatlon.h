@@ -1,7 +1,7 @@
 #ifndef GPLATLON_H
 #define GPLATLON_H
 
-#include <QDialog>
+#include <qt5/QtWidgets/QDialog>
 
 #include <hdr/plotdata.h>
 #include <hdr/filedownloader.h>

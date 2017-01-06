@@ -1,8 +1,8 @@
 #ifndef GPMAPPLOT_H
 #define GPMAPPLOT_H
 
-#include <QWidget>
-#include <QMouseEvent>
+#include <qt5/QtWidgets/QWidget>
+#include <qt5/QtGui/QMouseEvent>
 
 #include "hdr/gplatlon.h"
 

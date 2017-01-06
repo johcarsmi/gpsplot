@@ -1,11 +1,11 @@
 #include "gpsplot.h"
 #include "ui_gpsplot.h"
-#include <QDateTime>
-#include <QDebug>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QXmlStreamAttributes>
-#include <QVector>
+#include <qt5/QtCore/QDateTime>
+#include <qt5/QtCore/QDebug>
+#include <qt5/QtWidgets/QFileDialog>
+#include <qt5/QtWidgets/QMessageBox>
+#include <qt5/QtCore/QXmlStreamAttributes>
+#include <qt5/QtCore/QVector>
 #include <math.h>
 
 #include <qwt_date.h>

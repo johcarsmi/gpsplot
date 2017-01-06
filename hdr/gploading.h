@@ -1,7 +1,7 @@
 #ifndef GPLOADING_H
 #define GPLOADING_H
 
-#include <QWidget>
+#include <qt5/QtWidgets/QWidget>
 
 namespace Ui {
 class GpLoading;
