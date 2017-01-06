@@ -6,11 +6,16 @@ Oregon 450.
 ### Porting to Qt5
 The Qt object references were make specifically qt5 as initial
 attempts caused the headers for Qt4 to be installed. (Since removed).
+##### QWT Issues
 The qwt6 library in the openSUSE repositories is compiled against 
 Qt4 libraries and does not work with Qt5. The program fails to load.
 To overcome the problem I downloaded the qwt source from SourceForge 
 and compiled it in QtCreator (Qt5 of course - release process) and 
 issued a 'sudo make install' in the compile directory.
+In order to get the widgets appearing in QtDesigner I created a link
+from the installed library to the Qt5 plugins directory with:-
+>ln -s /usr/local/qwt-6.1.3/plugins/designer/libqwt_designer_plugin.so /usr/lib64/qt5/plugins/designer/
+##### Project file changes required
 The INCLUDEPATH value needed to be changed to point to the new location 
 and the LIBS value to the new libqwt.so .
 

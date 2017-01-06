@@ -59,4 +59,5 @@ RESOURCES += \
     gpsplot.qrc
 
 DISTFILES += \
-    misc/gpsplot.desktop
+    misc/gpsplot.desktop \
+    readme.md
