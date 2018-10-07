@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml network widgets
+QT       += core widgets gui xml network
 
 #greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -22,7 +22,7 @@ INSTALLS += menu
 TARGET = gpsplot
 TEMPLATE = app
 INCLUDEPATH += hdr \
-    /usr/local/qwt-6.1.3/include/
+    /usr/local/qwt-6.1.3/include
 
 SOURCES  += src/main.cpp\
     src/gpsplot.cpp \
@@ -48,7 +48,9 @@ FORMS    += frm/gpsplot.ui \
     frm/gplatlon.ui \
     frm/gploading.ui
 
-LIBS     += -L/usr/local/qwt-6.1.3/lib -lqwt
+#LIBS     += -L/usr/lib64 -lqwt #Replaced this line with the one below in case
+#                               #it made a difference.
+LIBS        += -L/usr/local/qwt-6.1.3/lib/ -lqwt
 
 OTHER_FILES += \
     README \

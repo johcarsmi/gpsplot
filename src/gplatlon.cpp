@@ -84,7 +84,7 @@ void GpLatLon::fireOffRequest(double &inLat, double &inLon, int &inZoom, int &in
         wLoad->raise();
         wLoad->show();
     }
-    QUrl bgUrl(tr("https://maps.googleapis.com/maps/api/staticmap?center=%1,%2&zoom=%3&size=%4x%5&maptype=%6&style=lightness:20")\
+    QUrl bgUrl(tr("https://maps.googleapis.com/maps/api/staticmap?center=%1,%2&zoom=%3&size=%4x%5&maptype=%6&style=lightness:20&key=AIzaSyDs0p8FXnpbCIYs5fsM9B02C5xjWy00DwE")\
                .arg(inLat).arg(inLon).arg(inZoom).arg(inPw).arg(inPh).arg(inType));
     bgImgData = new FileDownloader(bgUrl, this);
     connect(bgImgData, SIGNAL(downloaded()), this, SLOT (loadBG()));
@@ -311,7 +311,7 @@ void GpLatLon::doPleft()
 
  void GpLatLon::passDragPos(QPoint *curPt)
  {
-    // Calculate how muuch the pixel movement means in terms of Lat and Lon.
+    // Calculate how much the pixel movement means in terms of Lat and Lon.
     // The difference in signs in the next two lines reflects the y=0 being at the top of the picture.
     _lat = _latSaved + ((limsSaved.iMaxLat - limsSaved.iMinLat) * ((double)curPt->y() / (double)ui->gllPlot->height()) );
     _lon = _lonSaved - ((limsSaved.iMaxLon - limsSaved.iMinLon) * ((double)curPt->x() / (double)ui->gllPlot->width()) );
