@@ -33,6 +33,8 @@ It is a perpetual work in progress! Having said that I have no immediate
 plans to add any functionality at present (February 2015).
 One idea I may have a go at is using the mouse to drag the plot-on-satellite 
 to pan it. This was added in February 2016 with mouse wheel zoom.
+October 2019 the code was updated to remove implicit type conversions
+and old-style casts.
 
 ### Credits
 The filedownloader code was taken straight from the Qt documentation site.

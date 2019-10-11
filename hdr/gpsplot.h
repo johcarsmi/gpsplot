@@ -21,7 +21,7 @@ class GpsPlot : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit GpsPlot(QWidget *parent = 0);
+    explicit GpsPlot(QWidget *parent);
     ~GpsPlot();
 
 private:

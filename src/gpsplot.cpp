@@ -103,6 +103,7 @@ void GpsPlot::process_trk(QXmlStreamReader & inXml) // Process the 'trk' element
     process_trkseg(inXml);
     ui->dspTrackLength->setText(tr("%1").arg(dst[dst.count() - 1]));
     ui->dspTrackTime->setText(calcElapsed(elapsedTime));
+    ui->dspTrackDate->setText(trkDate);
 }
 
 void GpsPlot::process_trkseg(QXmlStreamReader & inXml)
@@ -161,7 +162,7 @@ void GpsPlot::process_trkseg(QXmlStreamReader & inXml)
                 tim.append(QwtDate::toDouble(qdt));
             }
         }
-        elapsedTime = stTime.secsTo(qdt);   // When get here all points have been processed.
+        elapsedTime = static_cast<int>(stTime.secsTo(qdt));   // When get here all points have been processed.
     }
     calcDst();
     calcSpeed();

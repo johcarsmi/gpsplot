@@ -27,7 +27,7 @@ GpLatLon::GpLatLon(QWidget *parent) :
     bgType = "satellite";                   // Set default view and track colour.
     trkCol = Qt::cyan;
     arrCol = Qt::yellow;
-    wLoad = 0;
+    wLoad = nullptr;
     arrD = new ArrowData;
     doPaint = true;
 }
@@ -76,7 +76,7 @@ void GpLatLon::fireOffRequest(double &inLat, double &inLon, int &inZoom, int &in
 {
     if (!doPaint) return;
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-    if (wLoad == 0)
+    if (wLoad == nullptr)
     {   // Pop up a loading message.
         //qDebug() << this->x() << this->y();
         wLoad = new GpLoading(this);
@@ -96,7 +96,7 @@ void GpLatLon::loadBG()  // When the download is complete, paint the plot area w
     this->repaint();    // Also causes repaint of the subordinate GpMapPlot.
     QApplication::restoreOverrideCursor();
     delete wLoad;
-    wLoad = 0;
+    wLoad = nullptr;
 }
 
 void GpLatLon::doResize()
@@ -139,8 +139,8 @@ void GpLatLon::calcLinePoints(edges &inLim, QVector<QPoint> *ptrPtVec) // Conver
     int ix = 0;
     while (ix < ggData->xData.size())
     {
-        trkPt.setX(pwW * (ggData->xData[ix] - inLim.iMinLon) / wLon);
-        trkPt.setY(pwH * (inLim.iMaxLat - ggData->yData[ix]) / hLat);
+        trkPt.setX(static_cast<int>(pwW * (ggData->xData[ix] - inLim.iMinLon) / wLon));
+        trkPt.setY(static_cast<int>(pwH * (inLim.iMaxLat - ggData->yData[ix]) / hLat));
         ptrPtVec->append(trkPt);
         ++ix;
     }
@@ -209,13 +209,13 @@ void GpLatLon::calcArrowPoints(PlotData *inPlot, ArrowData *outArr)
         // 'Left' arrow arm.
         eBrg = outArr->dirctn[ix] - 180.0 - arrAngle;  // degrees
         eBrg = deg2rad(fmod((eBrg + 360.0) , 360.0));  // radians
-        arrD->lPt[ix].setX(arrD->trkPt[ix].x() + (arrLen * sin(eBrg)));
-        arrD->lPt[ix].setY(arrD->trkPt[ix].y() - (arrLen * cos(eBrg)));
+        arrD->lPt[ix].setX(static_cast<int>(arrD->trkPt[ix].x() + (arrLen * sin(eBrg))));
+        arrD->lPt[ix].setY(static_cast<int>(arrD->trkPt[ix].y() - (arrLen * cos(eBrg))));
         // 'Right' arrow arm.
         eBrg = outArr->dirctn[ix] - 180.0 + arrAngle;
         eBrg = deg2rad(fmod((eBrg + 360.0) , 360.0));
-        arrD->rPt[ix].setX(arrD->trkPt[ix].x() + (arrLen * sin(eBrg)));
-        arrD->rPt[ix].setY(arrD->trkPt[ix].y() - (arrLen * cos(eBrg)));
+        arrD->rPt[ix].setX(static_cast<int>(arrD->trkPt[ix].x() + (arrLen * sin(eBrg))));
+        arrD->rPt[ix].setY(static_cast<int>(arrD->trkPt[ix].y() - (arrLen * cos(eBrg))));
     }
 }
 
@@ -313,8 +313,8 @@ void GpLatLon::doPleft()
  {
     // Calculate how much the pixel movement means in terms of Lat and Lon.
     // The difference in signs in the next two lines reflects the y=0 being at the top of the picture.
-    _lat = _latSaved + ((limsSaved.iMaxLat - limsSaved.iMinLat) * ((double)curPt->y() / (double)ui->gllPlot->height()) );
-    _lon = _lonSaved - ((limsSaved.iMaxLon - limsSaved.iMinLon) * ((double)curPt->x() / (double)ui->gllPlot->width()) );
+    _lat = _latSaved + ((limsSaved.iMaxLat - limsSaved.iMinLat) * (static_cast<double>(curPt->y()) / static_cast<double>(ui->gllPlot->height())) );
+    _lon = _lonSaved - ((limsSaved.iMaxLon - limsSaved.iMinLon) * (static_cast<double>(curPt->x()) / static_cast<double>(ui->gllPlot->width())) );
     //qDebug("GpLatLon: _lat = %f : _lon = %f", _lat, _lon);
     calculateLimits();
     drawPlot();

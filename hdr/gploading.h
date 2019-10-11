@@ -12,7 +12,7 @@ class GpLoading : public QWidget
     Q_OBJECT
 
 public:
-    explicit GpLoading(QWidget *parent = 0);
+    explicit GpLoading(QWidget *parent);
     ~GpLoading();
 
 private:

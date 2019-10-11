@@ -10,7 +10,7 @@ class GpMapPlot : public QWidget
 {
     Q_OBJECT
 public:
-    explicit GpMapPlot(QWidget *parent = 0);
+    explicit GpMapPlot(QWidget *parent);
     ~GpMapPlot();
 
 protected:

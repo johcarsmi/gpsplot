@@ -26,7 +26,7 @@ protected:
     void resizeEvent(QResizeEvent *);
 
 public:
-    explicit GpLatLon(QWidget *parent = 0);
+    explicit GpLatLon(QWidget *parent);
     ~GpLatLon();
 
     void ggAddData (PlotData *);

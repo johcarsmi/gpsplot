@@ -20,7 +20,7 @@ protected:
     void resizeEvent(QResizeEvent *);
 
 public:
-    explicit GpGraph(QWidget *parent = 0);
+    explicit GpGraph(QWidget *parent);
     ~GpGraph();
 
     void ggAddData (PlotData *);
