@@ -58,55 +58,88 @@ bool GpsPlot::processFile(const QString & inFile)   // Create XmlStreamReader an
         return trkFound;
     }
     xRead.setDevice(&gpxFile);
+    /* From here down need to restructure to process elements in a loop
+     * and process each as appropriate. */
     if (xRead.readNextStartElement())               // Check this is a gpx file.
         {
-            if (xRead.name() != tr("gpx")) {
+            itis = xRead.name().toString();
+            if (itis != tr("gpx"))
+            {
                 QMessageBox::warning(this, tr("Error"), tr("Not a gpx file!"));
                 xRead.raiseError(tr("Not a gpx file"));
                 gpxFile.close();
-                return trkFound; }
+                return trkFound;
+            }
         }
-        while (xRead.readNextStartElement())        // Skip unwanted elements stopping on the 'trk' element.
+    attr = xRead.attributes();
+    creatorDevice = QString(attr.value("creator").toString());
+    while (xRead.readNextStartElement())        // Skip unwanted elements stopping on the 'trk' element.
         {
+            if (creatorDevice.startsWith("OsmAnd") && xRead.name() == "metadata")   // Get track name for OsmAnd ... .
+            {
+                while (xRead.readNextStartElement())
+                {
+                    if (xRead.name() == "name")
+                    {
+                        eleText = xRead.readElementText(QXmlStreamReader::SkipChildElements);
+                        ui->dspTrackName->setText(eleText);
+                        break;
+                    }
+                }
+            }
+
 //          qDebug() << xRead.name();               // DEBUG
             if (xRead.name() == tr("trk"))
             {
+                if (creatorDevice.startsWith("Oregon"))
+                {
+                    while (xRead.readNextStartElement())
+                    {
+                        if (xRead.name() == "name")
+                        {
+                            eleText = xRead.readElementText(QXmlStreamReader::SkipChildElements);
+                            ui->dspTrackName->setText(eleText);
+                            break;
+                        }
+                    }
+
+                }
                 trkFound = true;
-                break;
             }
+            if (trkFound) break;
             xRead.skipCurrentElement();
         }
 //        qDebug() << xRead.name();                   // DEBUG
-        if (trkFound) process_trk(xRead);
-        else
+    if (trkFound) process_trk();
+    else
         {
             QMessageBox::warning(this, tr("Error"), tr("Not a gpx track file!"));
             xRead.raiseError(tr("Not a gpx track file"));
         }
-        gpxFile.close();
-        return trkFound;
+    gpxFile.close();
+    return trkFound;
  }
 
-void GpsPlot::process_trk(QXmlStreamReader & inXml) // Process the 'trk' element data and process track segment elements.
+void GpsPlot::process_trk() // Process the 'trk' element data and process track segment elements.
 {
-    inXml.readNextStartElement();
-    //qDebug() << inXml.name();                       // DEBUG
-    eleText = inXml.readElementText(QXmlStreamReader::SkipChildElements);
-//    qDebug() << eleText;
-    ui->dspTrackName->setText(eleText);
-    while (inXml.readNextStartElement())        // Skip unwanted elements.
+    //qDebug() << xRead.name();                       // DEBUG
+    while (xRead.readNextStartElement())        // Skip unwanted elements.
     {
-        if (inXml.name() == tr("trkseg")) break;
-        inXml.skipCurrentElement();
+        if (xRead.name() == tr("trkseg"))
+        {
+            process_trkseg();
+        }
     }
-    //qDebug() << inXml.name();                   // DEBUG
-    process_trkseg(inXml);
+    //qDebug() << xRead.name();                   // DEBUG
+    elapsedTime = static_cast<int>(stTime.secsTo(qdt));   // When get here all points have been processed.
+    calcDst();
+    calcSpeed();
     ui->dspTrackLength->setText(tr("%1").arg(dst[dst.count() - 1]));
     ui->dspTrackTime->setText(calcElapsed(elapsedTime));
     ui->dspTrackDate->setText(trkDate);
 }
 
-void GpsPlot::process_trkseg(QXmlStreamReader & inXml)
+void GpsPlot::process_trkseg()
 {
     firsttime = true;
     tim.clear();
@@ -117,55 +150,64 @@ void GpsPlot::process_trkseg(QXmlStreamReader & inXml)
     hspd.clear();
     vspd.clear();
     latMax = latMin = lonMax = lonMin = 0;
-    QXmlStreamAttributes attr;
-    QDateTime qdt;
-    while (inXml.readNext() != inXml.atEnd())
+    while (xRead.readNext() != xRead.atEnd())
     {
-        if (inXml.isStartElement())
+        if (xRead.isStartElement())
         {
-            // qDebug()  << inXml.tokenString() << inXml.name();                   // DEBUG
-            if (inXml.name() == tr("trkseg"))
+            // qDebug()  << xRead.tokenString() << xRead.name();                   // DEBUG
+            if (xRead.name() == tr("trkseg"))       // <<<<<< this block probably not required.
             {   // Ignore track segments and process only track points.
                 continue;
             }
-            if (inXml.name() == tr("trkpt"))
-            {   // Extract the lat and lon.
-                attr = inXml.attributes();
-                lat.append(QString(attr.value("lat").toString()).toDouble(&dok));
-                lon.append(QString(attr.value("lon").toString()).toDouble(&dok));
-                if (!firsttime) // Get the minimum and maximum values to allow equal scaling later.
-                {
-                    if (lat.last() < latMin) latMin = lat.last();
-                    if (lat.last() > latMax) latMax = lat.last();
-                    if (lon.last() < lonMin) lonMin = lon.last();
-                    if (lon.last() > lonMax) lonMax = lon.last();
-                }
-                else
-                {
-                    latMin = latMax = lat.last();
-                    lonMin = lonMax = lon.last();
-                }
+            if (xRead.name() == tr("trkpt"))    // Need to introduce loop within <trkpt> to be able to ignore child elements
+                                                // that need to be ignored.
+            {
+                process_trkpt();
             }
-            if (inXml.name() == tr("ele"))
-            {   // Extract the elevation.
-                ele.append(inXml.readElementText().toDouble(&dok));
-            }
-            if (inXml.name() == tr("time"))
-            {   // Extract the date/time and convert to a QwtDate.
-                qdt = QDateTime::fromString(inXml.readElementText(), Qt::ISODate);
-                if (firsttime)
-                {
-                    stTime = qdt;
-                    trkDate = qdt.toString(Qt::SystemLocaleShortDate).left(10);
-                    firsttime = false;
-                }
-                tim.append(QwtDate::toDouble(qdt));
-            }
-        }
-        elapsedTime = static_cast<int>(stTime.secsTo(qdt));   // When get here all points have been processed.
+         }
     }
-    calcDst();
-    calcSpeed();
+}
+
+void GpsPlot::process_trkpt()
+{
+    // Extract the lat and lon.
+    attr = xRead.attributes();
+    lat.append(QString(attr.value("lat").toString()).toDouble(&dok));
+    lon.append(QString(attr.value("lon").toString()).toDouble(&dok));
+    if (!firsttime) // Get the minimum and maximum values to allow equal scaling later.
+    {
+        if (lat.last() < latMin) latMin = lat.last();
+        if (lat.last() > latMax) latMax = lat.last();
+        if (lon.last() < lonMin) lonMin = lon.last();
+        if (lon.last() > lonMax) lonMax = lon.last();
+    }
+    else
+    {
+        latMin = latMax = lat.last();
+        lonMin = lonMax = lon.last();// TODO
+    }
+    while (xRead.readNext() != xRead.atEnd())
+    {
+        if (xRead.isEndElement())
+        {
+            if (xRead.name() == "trkpt") return;    // If end of track point end this loop
+        }
+        if (xRead.name() == tr("ele"))
+        {   // Extract the elevation.
+            ele.append(xRead.readElementText().toDouble(&dok));
+        }
+        else if (xRead.name() == tr("time"))
+        {   // Extract the date/time and convert to a QwtDate.
+            qdt = QDateTime::fromString(xRead.readElementText(), Qt::ISODate);
+            if (firsttime)
+            {
+                stTime = qdt;
+                trkDate = qdt.toString(Qt::SystemLocaleShortDate).left(10);
+                firsttime = false;
+            }
+            tim.append(QwtDate::toDouble(qdt));
+        }
+    }
 }
 
 void GpsPlot::calcDst()

@@ -55,10 +55,15 @@ private:
     QSettings * settings;
     const QString stgsFile = ".gpsplot.settings";
     QString curDir;
+    QXmlStreamAttributes attr;
+    QString creatorDevice;
+    QDateTime qdt;
+    QString itis;
 
     bool processFile(const QString &);
-    void process_trk(QXmlStreamReader &);
-    void process_trkseg(QXmlStreamReader &);
+    void process_trk();
+    void process_trkseg();
+    void process_trkpt();
     void createGraph();
     void calcDst();
     void calcSpeed();
