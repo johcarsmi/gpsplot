@@ -58,7 +58,6 @@ private:
     QXmlStreamAttributes attr;
     QString creatorDevice;
     QDateTime qdt;
-    QString itis;
 
     bool processFile(const QString &);
     void process_trk();

@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core widgets gui xml network
-CONFIG   += console
+CONFIG   += console # not sure this is necessary - inserted to try to get qDebug() << ... to work
 
 #greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

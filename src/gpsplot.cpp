@@ -62,8 +62,7 @@ bool GpsPlot::processFile(const QString & inFile)   // Create XmlStreamReader an
      * and process each as appropriate. */
     if (xRead.readNextStartElement())               // Check this is a gpx file.
         {
-            itis = xRead.name().toString();
-            if (itis != tr("gpx"))
+            if (xRead.name().toString() != "gpx")
             {
                 QMessageBox::warning(this, tr("Error"), tr("Not a gpx file!"));
                 xRead.raiseError(tr("Not a gpx file"));
@@ -89,21 +88,8 @@ bool GpsPlot::processFile(const QString & inFile)   // Create XmlStreamReader an
             }
 
 //          qDebug() << xRead.name();               // DEBUG
-            if (xRead.name() == tr("trk"))
+            if (xRead.name() == "trk")
             {
-                if (creatorDevice.startsWith("Oregon"))
-                {
-                    while (xRead.readNextStartElement())
-                    {
-                        if (xRead.name() == "name")
-                        {
-                            eleText = xRead.readElementText(QXmlStreamReader::SkipChildElements);
-                            ui->dspTrackName->setText(eleText);
-                            break;
-                        }
-                    }
-
-                }
                 trkFound = true;
             }
             if (trkFound) break;
@@ -123,9 +109,14 @@ bool GpsPlot::processFile(const QString & inFile)   // Create XmlStreamReader an
 void GpsPlot::process_trk() // Process the 'trk' element data and process track segment elements.
 {
     //qDebug() << xRead.name();                       // DEBUG
-    while (xRead.readNextStartElement())        // Skip unwanted elements.
+    while (xRead.readNext() != xRead.atEnd())        // Skip unwanted elements.
     {
-        if (xRead.name() == tr("trkseg"))
+        if (xRead.isStartElement() && xRead.name() == "name")
+        {
+            eleText = xRead.readElementText();
+            ui->dspTrackName->setText(eleText);
+        }
+        if (xRead.isStartElement() && xRead.name() == "trkseg")
         {
             process_trkseg();
         }
@@ -155,11 +146,11 @@ void GpsPlot::process_trkseg()
         if (xRead.isStartElement())
         {
             // qDebug()  << xRead.tokenString() << xRead.name();                   // DEBUG
-            if (xRead.name() == tr("trkseg"))       // <<<<<< this block probably not required.
+            if (xRead.name() == "trkseg")       // <<<<<< this block probably not required.
             {   // Ignore track segments and process only track points.
                 continue;
             }
-            if (xRead.name() == tr("trkpt"))    // Need to introduce loop within <trkpt> to be able to ignore child elements
+            if (xRead.name() == "trkpt")    // Need to introduce loop within <trkpt> to be able to ignore child elements
                                                 // that need to be ignored.
             {
                 process_trkpt();
@@ -192,11 +183,11 @@ void GpsPlot::process_trkpt()
         {
             if (xRead.name() == "trkpt") return;    // If end of track point end this loop
         }
-        if (xRead.name() == tr("ele"))
+        if (xRead.name() == "ele")
         {   // Extract the elevation.
             ele.append(xRead.readElementText().toDouble(&dok));
         }
-        else if (xRead.name() == tr("time"))
+        else if (xRead.name() == "time")
         {   // Extract the date/time and convert to a QwtDate.
             qdt = QDateTime::fromString(xRead.readElementText(), Qt::ISODate);
             if (firsttime)
@@ -267,8 +258,8 @@ void GpsPlot::doPlot()
         // Time / Elevation.
         pData->xData = tim;
         pData->yData = ele;
-        pData->xLabel = "Time (UTC)";
-        pData->yLabel = "Elevation (m)";
+        pData->xLabel = tr("Time (UTC)");
+        pData->yLabel = tr("Elevation (m)");
         pData->xType = "datetime";
         pData->yType = "double";
     }
@@ -277,8 +268,8 @@ void GpsPlot::doPlot()
         // Distance / Elevation.
         pData->xData = dst;
         pData->yData = ele;
-        pData->xLabel = "Distance (Kilometers)";
-        pData->yLabel = "Elevation (m)";
+        pData->xLabel = tr("Distance (Kilometers)");
+        pData->yLabel = tr("Elevation (m)");
         pData->xType = "double";
         pData->yType = "double";
     }
@@ -315,8 +306,8 @@ void GpsPlot::doPlot()
         pData->manScale = true;
         pData->xData = lon;
         pData->yData = lat;
-        pData->xLabel = "Longitude";
-        pData->yLabel = "Latitude";
+        pData->xLabel = tr("Longitude");
+        pData->yLabel = tr("Latitude");
         pData->xType = "double";
         pData->yType = "double";
         if(ui->rbMapTrack->isChecked())     // Want plot on picture not graph.
@@ -333,8 +324,8 @@ void GpsPlot::doPlot()
     {
         pData->xData = tim2;
         pData->yData = hspd;
-        pData->xLabel = "Time (UTC)";
-        pData->yLabel = "Horzontal Speed (kmh)";
+        pData->xLabel = tr("Time (UTC)");
+        pData->yLabel = tr("Horizontal Speed (kmh)");
         pData->xType = "datetime";
         pData->yType = "double";
     }
@@ -342,15 +333,15 @@ void GpsPlot::doPlot()
     {
         pData->xData = tim2;
         pData->yData = vspd;
-        pData->xLabel = "Time (UTC)";
-        pData->yLabel = "Vertical Speed (m per minute)";
+        pData->xLabel = tr("Time (UTC)");
+        pData->yLabel = tr("Vertical Speed (m per minute)");
         pData->xType = "datetime";
         pData->yType = "double";
     }
     else if (ui->rbFile->isChecked())
     {
         writeFile();
-        QMessageBox::information(this, "Notification", "File written to ~/track.txt");
+        QMessageBox::information(this, tr("Notification"), tr("File written to ~/track.txt"));
         return;
     }
     // Plot requested Graph
