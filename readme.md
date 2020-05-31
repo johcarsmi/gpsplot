@@ -1,7 +1,8 @@
 # gpsPlot
 
 This is a small project which I use to plot data from a Garmin 
-Oregon 450.
+Oregon 450. And now also the gpx file from OsmAnd on an Android
+phone.
 
 ### Porting to Qt5
 The Qt object references were make specifically qt5 as initial
