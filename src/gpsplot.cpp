@@ -58,8 +58,6 @@ bool GpsPlot::processFile(const QString & inFile)   // Create XmlStreamReader an
         return trkFound;
     }
     xRead.setDevice(&gpxFile);
-    /* From here down need to restructure to process elements in a loop
-     * and process each as appropriate. */
     if (xRead.readNextStartElement())               // Check this is a gpx file.
         {
             if (xRead.name().toString() != "gpx")
@@ -109,9 +107,9 @@ bool GpsPlot::processFile(const QString & inFile)   // Create XmlStreamReader an
 void GpsPlot::process_trk() // Process the 'trk' element data and process track segment elements.
 {
     //qDebug() << xRead.name();                       // DEBUG
-    while (xRead.readNext() != xRead.atEnd())        // Skip unwanted elements.
+    while (xRead.readNext() != xRead.atEnd())
     {
-        if (xRead.isStartElement() && xRead.name() == "name")
+        if (xRead.isStartElement() && xRead.name() == "name")   // Get the name of the track for Garmin Oregon.
         {
             eleText = xRead.readElementText();
             ui->dspTrackName->setText(eleText);
@@ -146,12 +144,11 @@ void GpsPlot::process_trkseg()
         if (xRead.isStartElement())
         {
             // qDebug()  << xRead.tokenString() << xRead.name();                   // DEBUG
-            if (xRead.name() == "trkseg")       // <<<<<< this block probably not required.
+/*            if (xRead.name() == "trkseg")       // <<<<<< this block probably not required.
             {   // Ignore track segments and process only track points.
                 continue;
-            }
-            if (xRead.name() == "trkpt")    // Need to introduce loop within <trkpt> to be able to ignore child elements
-                                                // that need to be ignored.
+            }   */
+            if (xRead.name() == "trkpt")    // Only process trkpt elements within a trkseg
             {
                 process_trkpt();
             }
@@ -175,20 +172,20 @@ void GpsPlot::process_trkpt()
     else
     {
         latMin = latMax = lat.last();
-        lonMin = lonMax = lon.last();// TODO
+        lonMin = lonMax = lon.last();
     }
     while (xRead.readNext() != xRead.atEnd())
     {
         if (xRead.isEndElement())
         {
-            if (xRead.name() == "trkpt") return;    // If end of track point end this loop
+            if (xRead.name() == "trkpt") return;    // If end of trkpt end this loop
         }
-        if (xRead.name() == "ele")
-        {   // Extract the elevation.
+        if (xRead.name() == "ele")     // Extract the elevation.
+        {
             ele.append(xRead.readElementText().toDouble(&dok));
         }
-        else if (xRead.name() == "time")
-        {   // Extract the date/time and convert to a QwtDate.
+        else if (xRead.name() == "time")   // Extract the date/time and convert to a QwtDate.
+        {
             qdt = QDateTime::fromString(xRead.readElementText(), Qt::ISODate);
             if (firsttime)
             {
