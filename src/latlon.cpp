@@ -26,6 +26,7 @@
 /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
  
 #include <math.h>
+#include <cmath>
  
 #define pi 3.14159265358979323846
  
@@ -44,7 +45,9 @@ double rad2deg(double rad) {
 }
 
 double distance(double lat1, double lon1, double lat2, double lon2, char unit) {
-    if (lat1 == lat2 && lon1 == lon2) return 0.0;
+//    if (lat1 == lat2 && lon1 == lon2) return 0.0;
+    double epsilon = 0.000001;
+    if (fabs(lat1 - lat2) < epsilon && fabs(lon1 - lon2) < epsilon) return 0.0;
   double theta, dist;
   theta = lon1 - lon2;
   dist = sin(deg2rad(lat1)) * sin(deg2rad(lat2)) + cos(deg2rad(lat1)) * cos(deg2rad(lat2)) * cos(deg2rad(theta));

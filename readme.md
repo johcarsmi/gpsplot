@@ -36,6 +36,9 @@ One idea I may have a go at is using the mouse to drag the plot-on-satellite
 to pan it. This was added in February 2016 with mouse wheel zoom.
 October 2019 the code was updated to remove implicit type conversions
 and old-style casts.
+In June 2020 the code was updated to process the data output by OsmAnd
+in its track file. This necessitated changing the double comparison in
+latlon.cpp to use the fabs() function from the cmath library.
 
 ### Credits
 The filedownloader code was taken straight from the Qt documentation site.
