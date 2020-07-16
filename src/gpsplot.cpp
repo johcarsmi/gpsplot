@@ -7,6 +7,7 @@
 #include <qt5/QtCore/QXmlStreamAttributes>
 #include <qt5/QtCore/QVector>
 #include <math.h>
+#include <stdio.h>
 
 #include <qwt_date.h>
 
@@ -202,10 +203,25 @@ void GpsPlot::calcDst()
 {
     dst.append(0.0);
     double cum = 0.0;
+    double dval = 0.0;
+    bool nomore = true;     // triggers debug code below when set to false.
     for (int ix = 1; ix < lat.count(); ix++)
     {
-        cum += distance(lat[ix -1],lon[ix-1],lat[ix],lon[ix],'K');
-        dst.append(cum);
+        dval = distance(lat[ix -1],lon[ix-1],lat[ix],lon[ix],'K');
+        if (isnan(dval))
+        {
+            if(!nomore)
+            {
+            qDebug() << printf("lat-1: %3.10f | lat: %3.10f | lon-1: %3.10f | lon: %3.10f\n",
+                   lat[ix-1], lat[ix], lon[ix-1], lon[ix]);
+            nomore = true;
+            }
+        }
+        else
+        {
+            cum += dval;
+            dst.append(cum);
+        }
     }
 }
 
