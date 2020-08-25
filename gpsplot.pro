@@ -5,7 +5,9 @@
 #-------------------------------------------------
 
 QT       += core widgets gui xml network
-CONFIG   += console # not sure this is necessary - inserted to try to get qDebug() << ... to work
+#CONFIG   += console # not sure this is necessary - inserted to try to get qDebug() << ... to work
+          # Changed Terminal: to Konsole in Tools/Options/Environment/System to allow copying of
+          # debug output
 
 #greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -23,7 +25,7 @@ INSTALLS += menu
 TARGET = gpsplot
 TEMPLATE = app
 INCLUDEPATH += hdr \
-    /usr/local/qwt-6.1.3/include
+    /usr/include/qt5/qwt6
 
 SOURCES  += src/main.cpp\
     src/gpsplot.cpp \
@@ -49,9 +51,7 @@ FORMS    += frm/gpsplot.ui \
     frm/gplatlon.ui \
     frm/gploading.ui
 
-#LIBS     += -L/usr/lib64 -lqwt #Replaced this line with the one below in case
-#                               #it made a difference.
-LIBS        += -L/usr/local/qwt-6.1.3/lib/ -lqwt
+LIBS     += -L/usr/lib64/libqwt-qt5 -lqwt-qt5
 
 OTHER_FILES += \
     README \

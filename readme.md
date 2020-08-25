@@ -15,11 +15,22 @@ and compiled it in QtCreator (Qt5 of course - release process) and
 issued a 'sudo make install' in the compile directory.
 In order to get the widgets appearing in QtDesigner I created a link
 from the installed library to the Qt5 plugins directory with:-
->ln -s /usr/local/qwt-6.1.3/plugins/designer/libqwt_designer_plugin.so /usr/lib64/qt5/plugins/designer/
+
+    ln -s /usr/local/qwt-6.1.3/plugins/designer/libqwt_designer_plugin.so /usr/lib64/qt5/plugins/designer/
 ##### Project file changes required
-The INCLUDEPATH value needed to be changed to point to the new location 
+The INCLUDEPATH value needed to be changed to point to the new location
 and the LIBS value to the new libqwt.so .
 
+#### openSUSE 15.2
+At this version of the OS qwt6 had been compiled against Qt5 but the
+library names had been changed. The work-around above was no longer
+required. In the project file I needed to change
+the INCLUDEPATH parameter to refer to
+
+    /usr/include/qt5/qwt6
+and the LIBS parameter to
+
+    += -L/usr/lib64/libqwt-qt5 -lqwt-qt5
 ### Description
 It takes a .gpx file and imports it and then allows the choice
 of graphs that can be obtained from the data.
