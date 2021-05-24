@@ -9,7 +9,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#include <qwt_date.h>
+#include <qwt6/qwt_date.h>
 
 #include "hdr/latlon.h"
 #include "hdr/gplatlon.h"

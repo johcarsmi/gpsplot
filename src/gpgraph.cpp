@@ -1,11 +1,11 @@
 #include "hdr/gpgraph.h"
 #include "ui_gpgraph.h"
 
-#include <qwt_date.h>
-#include <qwt_plot_curve.h>
-#include <qwt_plot_grid.h>
-#include <qwt_date_scale_draw.h>
-#include <qwt_date_scale_engine.h>
+#include <qwt6/qwt_date.h>
+#include <qwt6/qwt_plot_curve.h>
+#include <qwt6/qwt_plot_grid.h>
+#include <qwt6/qwt_date_scale_draw.h>
+#include <qwt6/qwt_date_scale_engine.h>
 
 
 GpGraph::GpGraph(QWidget *parent) :

@@ -5,8 +5,8 @@
 
 #include <hdr/plotdata.h>
 
-#include <qwt_plot_curve.h>
-#include <qwt_plot_rescaler.h>
+#include <qwt6/qwt_plot_curve.h>
+#include <qwt6/qwt_plot_rescaler.h>
 
 namespace Ui {
 class GpGraph;

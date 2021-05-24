@@ -25,7 +25,7 @@ INSTALLS += menu
 TARGET = gpsplot
 TEMPLATE = app
 INCLUDEPATH += hdr \
-    /usr/include/qt5/qwt6
+    /usr/include/qwt6
 
 SOURCES  += src/main.cpp\
     src/gpsplot.cpp \
