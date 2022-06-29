@@ -377,7 +377,7 @@ void GpsPlot::writeFile()   // Write a tab separated file with the track point d
     QTextStream tStrm(&oFile);
     for (int ix = 0; ix < tim.count(); ix++)
     {
-        tStrm << (QwtDate::toDateTime(tim[ix])).toString(Qt::ISODate) << "\t" << lat[ix] << "\t" << lon[ix] << "\t" << ele[ix] << endl;
+        tStrm << (QwtDate::toDateTime(tim[ix])).toString(Qt::ISODate) << "\t" << lat[ix] << "\t" << lon[ix] << "\t" << ele[ix] << Qt::endl;
     }
 }
 

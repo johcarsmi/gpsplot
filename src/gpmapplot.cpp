@@ -88,7 +88,7 @@ void GpMapPlot::mouseReleaseEvent(QMouseEvent *event)
 
 void GpMapPlot::wheelEvent(QWheelEvent *wevent)
 {
-    int movemt = wevent->delta();
+    int movemt = wevent->angleDelta().y();
     //qDebug("wheel move %d", movemt);
     if (movemt == 0)
     {

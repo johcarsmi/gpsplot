@@ -25,7 +25,7 @@ INSTALLS += menu
 TARGET = gpsplot
 TEMPLATE = app
 INCLUDEPATH += hdr \
-    /usr/include/qwt6
+    /usr/include/qt5/qwt6
 
 SOURCES  += src/main.cpp\
     src/gpsplot.cpp \
@@ -51,7 +51,7 @@ FORMS    += frm/gpsplot.ui \
     frm/gplatlon.ui \
     frm/gploading.ui
 
-LIBS     += -L/usr/lib64/libqwt-qt5 -lqwt-qt5
+LIBS     += -L/usr/lib64/ -lqwt
 
 OTHER_FILES += \
     README \
